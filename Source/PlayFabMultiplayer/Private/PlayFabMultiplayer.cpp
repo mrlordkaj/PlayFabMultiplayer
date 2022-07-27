@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright (C) 2022 Thinh Pham.
 
 #include "PlayFabMultiplayer.h"
 

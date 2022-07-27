@@ -1,14 +1,13 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright (C) 2022 Thinh Pham.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+//#include "PlayFabClientModels.h"
 #include "PlayFabAuthenticationContext.h"
-#include "ConnectedPlayer.h"
+#include "PlayFabJsonObject.h"
 #include "PlayFabGameInstance.generated.h"
-
-//DECLARE_LOG_CATEGORY_EXTERN(LogPlayFab, Log, All);
 
 /**
  * 
@@ -40,7 +39,22 @@ public:
     UPROPERTY(BlueprintReadWrite)
     FString ServerTargetMap;
 
-    /* Store player title id from client side. */
-    UPROPERTY(BlueprintReadWrite)
-    FString PlayerId;
+    /* Store player login context from client side. */
+    UPROPERTY(BlueprintReadOnly)
+    UPlayFabAuthenticationContext* PlayFabLoginContext;
+
+    /* Store player title entity from client side. */
+    UPROPERTY(BlueprintReadOnly)
+    UPlayFabJsonObject* PlayFabLoginEntity;
+
+    /* Store player title id from client side. Deprecated, use PlayFabLoginEntity instead. */
+    UPROPERTY(BlueprintReadOnly)
+    FString PlayFabMasterId;
+
+    /* When player login successfully, register their session here. */
+    UFUNCTION(BlueprintCallable)
+    void SetPlayFabLoginSession(FString PlayFabId, UPlayFabJsonObject* Entity, UPlayFabAuthenticationContext* Context);
+
+    //UPROPERTY(BlueprintReadWrite)
+    //FClientLoginResult PlayFabLoginResult;
 };

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright (C) 2022 Thinh Pham.
 
 #pragma once
 
@@ -28,7 +28,7 @@ public:
 	/* Called server side when a player exited. */
 	void UnregisterPlayFabUser(FString PlayerId);
 
-	int GetNumPlayFabUsers() const { return PlayFabUsers.Num(); };
+	int GetNumPlayFabUsers() const;
 
 private:
 	/* Store list of PlayFab players (PlayerId). */

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright (C) 2022 Thinh Pham.
 
 
 #include "PlayFabGameMode.h"
@@ -21,9 +21,11 @@ void APlayFabGameMode::Logout(AController* ExitingPlayer)
 {
 	Super::Logout(ExitingPlayer);
 
-	if (HasAuthority() && ShutdownServerWhenNoPlayers) {
+#if UE_SERVER
+	if (ShutdownServerWhenNoPlayers) {
 		ExitingPlayer->OnDestroyed.AddDynamic(this, &APlayFabGameMode::OnPlayerLeft);
 	}
+#endif
 }
 
 void APlayFabGameMode::OnPlayerLeft(AActor* Controller)
@@ -45,6 +47,11 @@ void APlayFabGameMode::UnregisterPlayFabUser(FString PlayerId)
 	UE_LOG(PlayFabMultiplayer, Warning, TEXT("PlayFabUser exited: %s"), *PlayerId);
 	PlayFabUsers.Remove(PlayerId);
 	UpdateConnectedPlayers();
+}
+
+int APlayFabGameMode::GetNumPlayFabUsers() const
+{
+	return PlayFabUsers.Num();
 }
 
 void APlayFabGameMode::UpdateConnectedPlayers()

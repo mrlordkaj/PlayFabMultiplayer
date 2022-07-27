@@ -1,9 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright (C) 2022 Thinh Pham.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Core/PlayFabClientAPI.h"
+#include "Core/PlayFabError.h"
 #include "PlayFabUserComponent.generated.h"
 
 
@@ -19,13 +21,19 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-//public:
-//	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+public:
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 public:
 	/* PlayerID used in title only. */
 	UPROPERTY(BlueprintReadOnly, Replicated)
 	FString PlayerId;
+
+	UPROPERTY(BlueprintReadOnly)
+	FString DisplayName;
+
+private:
+	UPlayFabGameInstance* GInst;
 
 private:
 	/* Use to send target map to server lobby. */
@@ -36,4 +44,8 @@ protected:
 	/* List samples of PlayerId for testing on local. */
 	UPROPERTY(EditDefaultsOnly, Category = "Debugging")
 	TArray<FString> DemoPlayFabUsers;
+
+public:
+	void OnGetPlayerProfileSuccess(const PlayFab::ClientModels::FGetPlayerProfileResult& Result);
+	void OnPlayFabError(const PlayFab::FPlayFabCppError& ErrorResult);
 };
