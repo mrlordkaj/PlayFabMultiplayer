@@ -17,7 +17,8 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	Super::PostLogin(NewPlayer);
 
 	// register first player, to read target map later
-	if (!FirstController && HasAuthority()) {
+	if (!FirstController && HasAuthority())
+	{
 		FirstController = NewPlayer;
 	}
 }
@@ -27,23 +28,27 @@ void ALobbyGameMode::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// try to read target map from first player
-	if (FirstController && ServerTargetMap.IsEmpty() && HasAuthority()) {
+	if (FirstController && ServerTargetMap.IsEmpty() && HasAuthority())
+	{
 		APawn* Pawn = FirstController->GetPawn();
-		ALobbyPawn* LobbyPawn = Cast<ALobbyPawn>(Pawn);
-		if (LobbyPawn) {
+		if (ALobbyPawn* LobbyPawn = Cast<ALobbyPawn>(Pawn))
+		{
 			ServerTargetMap = LobbyPawn->ServerTargetMap;
-			if (!ServerTargetMap.IsEmpty()) {
+			if (!ServerTargetMap.IsEmpty())
+			{
 				TravelCooldown = TravelDelay;
 			}
 		}
 	}
 
 	// delay few seconds before travel to target map
-	if (TravelCooldown >= 0) {
+	if (TravelCooldown >= 0)
+	{
 		TravelCooldown -= DeltaTime;
-		if (TravelCooldown < 0) {
-			FString Command = "servertravel " + ServerTargetMap;
-			UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), Command);
+		if (TravelCooldown < 0)
+		{
+			FString Cmd = "servertravel " + ServerTargetMap;
+			UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), Cmd);
 		}
 	}
 }

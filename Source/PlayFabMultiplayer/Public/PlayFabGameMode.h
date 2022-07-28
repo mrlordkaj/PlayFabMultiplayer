@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "GameFramework/Controller.h"
 #include "PlayFabGameMode.generated.h"
 
 /**
@@ -14,7 +13,7 @@ UCLASS()
 class PLAYFABMULTIPLAYER_API APlayFabGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
 public:
 	APlayFabGameMode();
 
@@ -28,6 +27,7 @@ public:
 	/* Called server side when a player exited. */
 	void UnregisterPlayFabUser(FString PlayerId);
 
+	/* Count number of PlayFab users has been registered on server side. */
 	int GetNumPlayFabUsers() const;
 
 private:
@@ -43,5 +43,5 @@ protected:
 
 private:
 	UFUNCTION()
-	void OnPlayerLeft(AActor* Controller);
+	void OnPlayerOut(AActor* PlayerController);
 };

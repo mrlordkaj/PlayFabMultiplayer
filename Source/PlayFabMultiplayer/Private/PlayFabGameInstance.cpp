@@ -3,12 +3,14 @@
 
 #include "PlayFabGameInstance.h"
 #include "PlayFabMultiplayer.h"
+#if UE_SERVER
 #include "PlayfabGSDK.h"
 #include "GSDKUtils.h"
-#include "PlayFab.h"
+#endif
 
 void UPlayFabGameInstance::Init()
 {
+#if UE_SERVER
 	FOnGSDKShutdown_Dyn OnGsdkShutdown;
 	OnGsdkShutdown.BindDynamic(this, &UPlayFabGameInstance::OnGSDKShutdown);
 	FOnGSDKHealthCheck_Dyn OnGsdkHealthCheck;
@@ -23,14 +25,15 @@ void UPlayFabGameInstance::Init()
 	UGSDKUtils::RegisterGSDKServerActiveDelegate(OnGSDKServerActive);
 	UGSDKUtils::RegisterGSDKReadyForPlayers(OnGSDKReadyForPlayers);
 
-#if UE_SERVER
 	UGSDKUtils::SetDefaultServerHostPort();
 #endif
 }
 
 void UPlayFabGameInstance::OnStart()
 {
+#if UE_SERVER
 	UGSDKUtils::ReadyForPlayers();
+#endif
 }
 
 void UPlayFabGameInstance::OnGSDKShutdown()
@@ -46,28 +49,26 @@ bool UPlayFabGameInstance::OnGSDKHealthCheck()
 
 void UPlayFabGameInstance::OnGSDKServerActive()
 {
-	/**
-	 * Server is transitioning to an active state.
-	 * Optional: Add in the implementation any code that is needed for the game server when
-	 * this transition occurs.
-	 */
 	UE_LOG(PlayFabMultiplayer, Warning, TEXT("Server active"));
 }
 
 void UPlayFabGameInstance::OnGSDKReadyForPlayers()
 {
-	/**
-	 * Server is transitioning to a StandBy state. Game initialization is complete and the game is ready
-	 * to accept players.
-	 * Optional: Add in the implementation any code that is needed for the game server before
-	 * initialization completes.
-	 */
 	UE_LOG(PlayFabMultiplayer, Warning, TEXT("Server ready"));
 }
 
-void UPlayFabGameInstance::SetPlayFabLoginSession(FString PlayFabId, UPlayFabJsonObject* Entity, UPlayFabAuthenticationContext* Context)
+void UPlayFabGameInstance::SetPlayFabLoginSession(FString PlayerId, UPlayFabJsonObject* PlayerEntity,
+                                                  UPlayFabAuthenticationContext* AuthContext)
 {
-	PlayFabMasterId = PlayFabId;
-	PlayFabLoginEntity = Entity;
-	PlayFabLoginContext = Context;
+	PlayFabId = PlayerId;
+	PlayFabEntity = PlayerEntity;
+	PlayFabLoginContext = AuthContext;
+}
+
+void UPlayFabGameInstance::GetPlayFabLoginSession(FString& PlayerId, UPlayFabJsonObject*& PlayerEntity,
+                                                  UPlayFabAuthenticationContext*& AuthContext)
+{
+	PlayerId = PlayFabId;
+	PlayerEntity = PlayFabEntity;
+	AuthContext = PlayFabLoginContext;
 }

@@ -25,5 +25,4 @@ private:
 	/* Use to send target map to server lobby. */
 	UFUNCTION(Server, Unreliable)
 	virtual void SubmitServerTargetMap(const FString& ClientTargetMap);
-
 };

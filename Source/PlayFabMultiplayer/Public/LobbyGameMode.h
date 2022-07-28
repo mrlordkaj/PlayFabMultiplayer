@@ -13,7 +13,7 @@ UCLASS()
 class PLAYFABMULTIPLAYER_API ALobbyGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
 public:
 	ALobbyGameMode();
 
@@ -25,7 +25,6 @@ public:
 	float TravelDelay = 5;
 
 private:
-
 	APlayerController* FirstController = nullptr;
 	FString ServerTargetMap;
 	float TravelCooldown = -1;

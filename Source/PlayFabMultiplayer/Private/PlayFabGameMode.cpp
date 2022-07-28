@@ -2,9 +2,7 @@
 
 
 #include "PlayFabGameMode.h"
-#include "PlayFabUserComponent.h"
 #include "PlayFabMultiplayer.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "GSDKUtils.h"
 
 APlayFabGameMode::APlayFabGameMode()
@@ -23,15 +21,17 @@ void APlayFabGameMode::Logout(AController* ExitingPlayer)
 
 #if UE_SERVER
 	if (ShutdownServerWhenNoPlayers) {
-		ExitingPlayer->OnDestroyed.AddDynamic(this, &APlayFabGameMode::OnPlayerLeft);
+		ExitingPlayer->OnDestroyed.AddDynamic(this, &APlayFabGameMode::OnPlayerOut);
 	}
 #endif
 }
 
-void APlayFabGameMode::OnPlayerLeft(AActor* Controller)
+void APlayFabGameMode::OnPlayerOut(AActor* PlayerController)
 {
-	if (GetNumPlayers() < 1) {
-		RequestEngineExit("All players left");
+	if (GetNumPlayers() < 1)
+	{
+		FPlatformMisc::RequestExit(false);
+		//RequestEngineExit("All players left");
 	}
 }
 
@@ -57,7 +57,8 @@ int APlayFabGameMode::GetNumPlayFabUsers() const
 void APlayFabGameMode::UpdateConnectedPlayers()
 {
 	TArray<FConnectedPlayer> Players;
-	for (FString PlayerId : PlayFabUsers) {
+	for (FString PlayerId : PlayFabUsers)
+	{
 		FConnectedPlayer Player;
 		Player.PlayerId = PlayerId;
 		Players.Add(Player);

@@ -7,6 +7,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "PlayFab.h"
+#include "Net/UnrealNetwork.h"
 
 UPlayFabUserComponent::UPlayFabUserComponent()
 {
@@ -20,12 +21,14 @@ void UPlayFabUserComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GInst = Cast<UPlayFabGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-
+	UWorld* World = GetWorld();
 	AActor* Owner = GetOwner();
-	if (!Owner->HasAuthority() && UGameplayStatics::GetPlayerPawn(GetWorld(), 0) == Owner) {
-		if (GInst) {
-			SubmitPlayerId(GInst->PlayFabMasterId);
+	if (!Owner->HasAuthority() && UGameplayStatics::GetPlayerPawn(World, 0) == Owner)
+	{
+		UPlayFabGameInstance* GInst = Cast<UPlayFabGameInstance>(UGameplayStatics::GetGameInstance(World));
+		if (GInst)
+		{
+			SubmitPlayFabId(GInst->PlayFabId);
 		}
 	}
 }
@@ -35,23 +38,29 @@ void UPlayFabUserComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 
 	APlayFabGameMode* GMode = Cast<APlayFabGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
-	if (GMode && GMode->HasAuthority()) {
-		GMode->UnregisterPlayFabUser(PlayerId);
+	if (GMode && GMode->HasAuthority())
+	{
+		GMode->UnregisterPlayFabUser(PlayFabId);
 	}
 }
 
-void UPlayFabUserComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UPlayFabUserComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+                                          FActorComponentTickFunction* ThisTickFunction)
 {
-	if (!PlayerId.IsEmpty()) {
-		if (PlayerId.Len() == 16) {
+	if (!PlayFabId.IsEmpty())
+	{
+		if (PlayFabId.Len() == 16)
+		{
 			PlayFab::ClientModels::FGetPlayerProfileRequest Request;
 			// TODO: Request.AuthenticationContext
-			Request.PlayFabId = PlayerId;
+			Request.PlayFabId = PlayFabId;
 
 			PlayFabClientPtr ClientAPI = IPlayFabModuleInterface::Get().GetClientAPI();
 			ClientAPI->GetPlayerProfile(Request,
-				PlayFab::UPlayFabClientAPI::FGetPlayerProfileDelegate::CreateUObject(this, &UPlayFabUserComponent::OnGetPlayerProfileSuccess),
-				PlayFab::FPlayFabErrorDelegate::CreateUObject(this, &UPlayFabUserComponent::OnPlayFabError)
+			                            PlayFab::UPlayFabClientAPI::FGetPlayerProfileDelegate::CreateUObject(
+				                            this, &UPlayFabUserComponent::OnGetPlayerProfileSuccess),
+			                            PlayFab::FPlayFabErrorDelegate::CreateUObject(
+				                            this, &UPlayFabUserComponent::OnPlayFabError)
 			);
 		}
 		SetComponentTickEnabled(false);
@@ -65,28 +74,31 @@ void UPlayFabUserComponent::OnGetPlayerProfileSuccess(const PlayFab::ClientModel
 
 void UPlayFabUserComponent::OnPlayFabError(const PlayFab::FPlayFabCppError& ErrorResult)
 {
-	DisplayName = TEXT("Error");
+	FString Msg = FString::Printf(TEXT("%s (%d)"), *ErrorResult.ErrorMessage, ErrorResult.ErrorCode);
+	UKismetSystemLibrary::PrintString(GetWorld(), Msg, true, true, FLinearColor::Red);
 }
 
 void UPlayFabUserComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UPlayFabUserComponent, PlayerId);
+	DOREPLIFETIME(UPlayFabUserComponent, PlayFabId);
 }
 
-void UPlayFabUserComponent::SubmitPlayerId_Implementation(const FString& ClientPlayerId)
+void UPlayFabUserComponent::SubmitPlayFabId_Implementation(const FString& ClientPlayFabId)
 {
-	PlayerId = ClientPlayerId;
+	PlayFabId = ClientPlayFabId;
 	APlayFabGameMode* GMode = Cast<APlayFabGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
-	if (GMode) {
-		if (PlayerId.IsEmpty()) {
+	if (GMode)
+	{
+		if (PlayFabId.IsEmpty())
+		{
 			// apply abstract id for local testing
 			int NumUsers = GMode->GetNumPlayFabUsers();
-			PlayerId = (NumUsers < DemoPlayFabUsers.Num()) ?
-				PlayerId = DemoPlayFabUsers[NumUsers] :
-				FString::Printf(TEXT("LOCAL%d"), FMath::RandRange(100, 999));
+			PlayFabId = (NumUsers < DemoPlayFabUsers.Num())
+				            ? PlayFabId = DemoPlayFabUsers[NumUsers]
+				            : FString::Printf(TEXT("LOCAL%d"), FMath::RandRange(100, 999));
 		}
-		GMode->RegisterPlayFabUser(PlayerId);
+		GMode->RegisterPlayFabUser(PlayFabId);
 	}
 }
