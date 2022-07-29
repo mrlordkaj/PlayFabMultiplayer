@@ -2,53 +2,31 @@
 
 
 #include "LobbyGameMode.h"
+#include "LobbyGameState.h"
 #include "LobbyPawn.h"
-#include "GameFramework/PlayerController.h"
+#include "PlayFabMultiplayer.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 ALobbyGameMode::ALobbyGameMode()
 {
-	PrimaryActorTick.bCanEverTick = true;
 	DefaultPawnClass = ALobbyPawn::StaticClass();
+	GameStateClass = ALobbyGameState::StaticClass();
 }
 
-void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
+void ALobbyGameMode::SetTargetMap(const FString ClientTargetMap)
 {
-	Super::PostLogin(NewPlayer);
-
-	// register first player, to read target map later
-	if (!FirstController && HasAuthority())
+	if (TargetMap.IsEmpty() && !ClientTargetMap.IsEmpty())
 	{
-		FirstController = NewPlayer;
+		TargetMap = ClientTargetMap;
+		FTimerHandle Timer;
+		FTimerDelegate Delegate = FTimerDelegate::CreateUObject(this, &ALobbyGameMode::TravelTargetMap);
+		GetWorldTimerManager().SetTimer(Timer, Delegate, TravelDelay, false);
+		UE_LOG(PlayFabMultiplayer, Warning, TEXT("Going travel to '%s' after %d seconds"), *TargetMap, TravelDelay);
 	}
 }
 
-void ALobbyGameMode::Tick(float DeltaTime)
+void ALobbyGameMode::TravelTargetMap() const
 {
-	Super::Tick(DeltaTime);
-
-	// try to read target map from first player
-	if (FirstController && ServerTargetMap.IsEmpty() && HasAuthority())
-	{
-		APawn* Pawn = FirstController->GetPawn();
-		if (ALobbyPawn* LobbyPawn = Cast<ALobbyPawn>(Pawn))
-		{
-			ServerTargetMap = LobbyPawn->ServerTargetMap;
-			if (!ServerTargetMap.IsEmpty())
-			{
-				TravelCooldown = TravelDelay;
-			}
-		}
-	}
-
-	// delay few seconds before travel to target map
-	if (TravelCooldown >= 0)
-	{
-		TravelCooldown -= DeltaTime;
-		if (TravelCooldown < 0)
-		{
-			FString Cmd = "servertravel " + ServerTargetMap;
-			UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), Cmd);
-		}
-	}
+	FString Cmd = "servertravel " + TargetMap;
+	UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), Cmd);
 }

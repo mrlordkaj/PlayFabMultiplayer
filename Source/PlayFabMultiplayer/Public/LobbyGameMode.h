@@ -17,15 +17,17 @@ class PLAYFABMULTIPLAYER_API ALobbyGameMode : public AGameModeBase
 public:
 	ALobbyGameMode();
 
-	virtual void PostLogin(APlayerController* NewPlayer) override;
-	virtual void Tick(float DeltaTime) override;
+	void SetTargetMap(const FString ClientTargetMap);
 
+protected:
 	/* Delay before travel to target map, in seconds. */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	float TravelDelay = 5;
+	UPROPERTY(EditDefaultsOnly)
+	int TravelDelay = 10;
 
 private:
-	APlayerController* FirstController = nullptr;
-	FString ServerTargetMap;
-	float TravelCooldown = -1;
+	/* The target map to be travelled to. */
+	FString TargetMap;
+
+	/* Travel command called after the delay. */
+	void TravelTargetMap() const;
 };

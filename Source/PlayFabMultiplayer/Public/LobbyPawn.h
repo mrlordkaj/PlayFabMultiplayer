@@ -14,15 +14,11 @@ class PLAYFABMULTIPLAYER_API ALobbyPawn : public APawn
 public:
 	ALobbyPawn();
 
-	/* Use to send target map to server lobby. */
-	UPROPERTY(Replicated)
-	FString ServerTargetMap;
-
 protected:
 	virtual void BeginPlay() override;
 
 private:
 	/* Use to send target map to server lobby. */
 	UFUNCTION(Server, Unreliable)
-	virtual void SubmitServerTargetMap(const FString& ClientTargetMap);
+	virtual void SubmitTargetMap(const FString& TargetMap);
 };

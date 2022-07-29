@@ -36,7 +36,7 @@ protected:
 public:
 	/* Store target map from client side. */
 	UPROPERTY(BlueprintReadWrite)
-	FString ServerTargetMap;
+	FString TravelTargetMap;
 
 	/* Store player login context from client side. */
 	UPROPERTY(BlueprintReadOnly)

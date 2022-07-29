@@ -2,39 +2,33 @@
 
 
 #include "LobbyPawn.h"
+#include "LobbyGameMode.h"
 #include "PlayFabGameInstance.h"
-#include "Net/UnrealNetwork.h"
-#include "Kismet/GameplayStatics.h"
 
 ALobbyPawn::ALobbyPawn()
 {
 	PrimaryActorTick.bCanEverTick = false;
 }
 
-void ALobbyPawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(ALobbyPawn, ServerTargetMap);
-}
-
 void ALobbyPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// read target map from game instance
-	UWorld* World = GetWorld();
-	if (!HasAuthority() && UGameplayStatics::GetPlayerPawn(World, 0) == this)
+	// send target map to server
+	if (!HasAuthority() && IsLocallyControlled())
 	{
-		UPlayFabGameInstance* GInst = Cast<UPlayFabGameInstance>(UGameplayStatics::GetGameInstance(World));
-		if (GInst)
+		if (UPlayFabGameInstance* GInst = GetGameInstance<UPlayFabGameInstance>())
 		{
-			SubmitServerTargetMap(GInst->ServerTargetMap);
+			SubmitTargetMap(GInst->TravelTargetMap);
 		}
 	}
 }
 
-void ALobbyPawn::SubmitServerTargetMap_Implementation(const FString& ClientTargetMap)
+void ALobbyPawn::SubmitTargetMap_Implementation(const FString& TargetMap)
 {
-	ServerTargetMap = ClientTargetMap;
+	// redirect to game mode to make sure execute only 1 time
+	if (ALobbyGameMode* GMode = GetWorld()->GetAuthGameMode<ALobbyGameMode>())
+	{
+		GMode->SetTargetMap(TargetMap);
+	}
 }
