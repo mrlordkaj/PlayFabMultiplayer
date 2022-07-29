@@ -17,6 +17,7 @@ class PLAYFABMULTIPLAYER_API ALobbyGameMode : public AGameModeBase
 public:
 	ALobbyGameMode();
 
+	/* Receive target map from pawn */
 	void SetTargetMap(const FString ClientTargetMap);
 
 protected:

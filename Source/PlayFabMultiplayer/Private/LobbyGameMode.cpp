@@ -2,7 +2,6 @@
 
 
 #include "LobbyGameMode.h"
-#include "LobbyGameState.h"
 #include "LobbyPawn.h"
 #include "PlayFabMultiplayer.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -10,7 +9,6 @@
 ALobbyGameMode::ALobbyGameMode()
 {
 	DefaultPawnClass = ALobbyPawn::StaticClass();
-	GameStateClass = ALobbyGameState::StaticClass();
 }
 
 void ALobbyGameMode::SetTargetMap(const FString ClientTargetMap)

@@ -25,10 +25,11 @@ public:
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
 public:
-	/* PlayerID used in title only. */
+	/* Player ID in studio. */
 	UPROPERTY(BlueprintReadOnly, Replicated)
-	FString PlayFabId;
+	FString PlayerMasterId;
 
+	/* Player display name inside title. */
 	UPROPERTY(BlueprintReadOnly)
 	FString DisplayName;
 
@@ -44,5 +45,5 @@ protected:
 
 public:
 	void OnGetPlayerProfileSuccess(const PlayFab::ClientModels::FGetPlayerProfileResult& Result);
-	void OnPlayFabError(const PlayFab::FPlayFabCppError& ErrorResult);
+	void OnPlayFabError(const PlayFab::FPlayFabCppError& ErrorResult) const;
 };
