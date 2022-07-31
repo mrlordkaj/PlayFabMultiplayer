@@ -4,19 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "PlayFabGameMode.generated.h"
+#include "MultiplayerGameMode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PLAYFABMULTIPLAYER_API APlayFabGameMode : public AGameModeBase
+class PLAYFABMULTIPLAYER_API AMultiplayerGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
 public:
-	APlayFabGameMode();
+	AMultiplayerGameMode();
 
+	virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 	virtual void Logout(AController* ExitingPlayer) override;
 

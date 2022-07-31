@@ -15,7 +15,7 @@ void ALobbyPawn::BeginPlay()
 	Super::BeginPlay();
 
 	// send target map to server
-	if (!HasAuthority() && IsLocallyControlled())
+	if (IsLocallyControlled())
 	{
 		if (UPlayFabGameInstance* GInst = GetGameInstance<UPlayFabGameInstance>())
 		{

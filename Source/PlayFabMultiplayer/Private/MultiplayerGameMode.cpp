@@ -1,21 +1,31 @@
 // Copyright (C) 2022 Thinh Pham.
 
 
-#include "PlayFabGameMode.h"
+#include "MultiplayerGameMode.h"
 #include "PlayFabMultiplayer.h"
 #include "GSDKUtils.h"
+#include "Kismet/GameplayStatics.h"
 
-APlayFabGameMode::APlayFabGameMode()
+AMultiplayerGameMode::AMultiplayerGameMode()
 {
 	PrimaryActorTick.bCanEverTick = false;
 }
 
-void APlayFabGameMode::PostLogin(APlayerController* NewPlayer)
+void AMultiplayerGameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId,
+	FString& ErrorMessage)
+{
+	Super::PreLogin(Options, Address, UniqueId, ErrorMessage);
+
+	UGameplayStatics::ParseOption(Options, "PlayFabId");
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *Options);
+}
+
+void AMultiplayerGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 }
 
-void APlayFabGameMode::Logout(AController* ExitingPlayer)
+void AMultiplayerGameMode::Logout(AController* ExitingPlayer)
 {
 	Super::Logout(ExitingPlayer);
 
@@ -26,7 +36,7 @@ void APlayFabGameMode::Logout(AController* ExitingPlayer)
 #endif
 }
 
-void APlayFabGameMode::OnPlayerOut(AActor* PlayerController)
+void AMultiplayerGameMode::OnPlayerOut(AActor* PlayerController)
 {
 	if (GetNumPlayers() < 1)
 	{
@@ -35,26 +45,26 @@ void APlayFabGameMode::OnPlayerOut(AActor* PlayerController)
 	}
 }
 
-void APlayFabGameMode::RegisterPlayFabUser(FString PlayerId)
+void AMultiplayerGameMode::RegisterPlayFabUser(FString PlayerId)
 {
 	UE_LOG(PlayFabMultiplayer, Warning, TEXT("PlayFabUser joined: %s"), *PlayerId);
 	PlayFabUsers.AddUnique(PlayerId);
 	UpdateConnectedPlayers();
 }
 
-void APlayFabGameMode::UnregisterPlayFabUser(FString PlayerId)
+void AMultiplayerGameMode::UnregisterPlayFabUser(FString PlayerId)
 {
 	UE_LOG(PlayFabMultiplayer, Warning, TEXT("PlayFabUser exited: %s"), *PlayerId);
 	PlayFabUsers.Remove(PlayerId);
 	UpdateConnectedPlayers();
 }
 
-int APlayFabGameMode::GetNumPlayFabUsers() const
+int AMultiplayerGameMode::GetNumPlayFabUsers() const
 {
 	return PlayFabUsers.Num();
 }
 
-void APlayFabGameMode::UpdateConnectedPlayers()
+void AMultiplayerGameMode::UpdateConnectedPlayers()
 {
 	TArray<FConnectedPlayer> Players;
 	for (FString PlayerId : PlayFabUsers)

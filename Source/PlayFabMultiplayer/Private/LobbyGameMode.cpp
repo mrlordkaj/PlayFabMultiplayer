@@ -25,6 +25,7 @@ void ALobbyGameMode::SetTargetMap(const FString ClientTargetMap)
 
 void ALobbyGameMode::TravelTargetMap() const
 {
-	FString Cmd = "servertravel " + TargetMap;
-	UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), Cmd);
+	//FString Cmd = "servertravel " + TargetMap;
+	//UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), Cmd);
+	GetWorld()->ServerTravel(TargetMap);
 }

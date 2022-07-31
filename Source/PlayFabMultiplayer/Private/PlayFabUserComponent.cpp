@@ -3,7 +3,7 @@
 
 #include "PlayFabUserComponent.h"
 #include "PlayFabGameInstance.h"
-#include "PlayFabGameMode.h"
+#include "MultiplayerGameMode.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PlayFab.h"
 #include "Net/UnrealNetwork.h"
@@ -36,7 +36,7 @@ void UPlayFabUserComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
-	if (APlayFabGameMode* GMode = GetWorld()->GetAuthGameMode<APlayFabGameMode>())
+	if (AMultiplayerGameMode* GMode = GetWorld()->GetAuthGameMode<AMultiplayerGameMode>())
 	{
 		GMode->UnregisterPlayFabUser(PlayerMasterId);
 	}
@@ -68,6 +68,8 @@ void UPlayFabUserComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 void UPlayFabUserComponent::OnGetPlayerProfileSuccess(const PlayFab::ClientModels::FGetPlayerProfileResult& Result)
 {
 	DisplayName = Result.PlayerProfile->DisplayName;
+	APawn *Pawn;
+	Pawn->getPlayer
 }
 
 void UPlayFabUserComponent::OnPlayFabError(const PlayFab::FPlayFabCppError& ErrorResult) const
@@ -86,7 +88,7 @@ void UPlayFabUserComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 void UPlayFabUserComponent::SubmitPlayFabId_Implementation(const FString& ClientPlayFabId)
 {
 	PlayerMasterId = ClientPlayFabId;
-	if (APlayFabGameMode* GMode = GetWorld()->GetAuthGameMode<APlayFabGameMode>())
+	if (AMultiplayerGameMode* GMode = GetWorld()->GetAuthGameMode<AMultiplayerGameMode>())
 	{
 		if (PlayerMasterId.IsEmpty())
 		{

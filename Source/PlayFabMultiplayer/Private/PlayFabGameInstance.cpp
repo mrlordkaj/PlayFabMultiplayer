@@ -3,14 +3,11 @@
 
 #include "PlayFabGameInstance.h"
 #include "PlayFabMultiplayer.h"
-#if UE_SERVER
 #include "PlayfabGSDK.h"
 #include "GSDKUtils.h"
-#endif
 
 void UPlayFabGameInstance::Init()
 {
-#if UE_SERVER
 	FOnGSDKShutdown_Dyn OnGsdkShutdown;
 	OnGsdkShutdown.BindDynamic(this, &UPlayFabGameInstance::OnGSDKShutdown);
 	FOnGSDKHealthCheck_Dyn OnGsdkHealthCheck;
@@ -25,6 +22,7 @@ void UPlayFabGameInstance::Init()
 	UGSDKUtils::RegisterGSDKServerActiveDelegate(OnGSDKServerActive);
 	UGSDKUtils::RegisterGSDKReadyForPlayers(OnGSDKReadyForPlayers);
 
+#if UE_SERVER
 	UGSDKUtils::SetDefaultServerHostPort();
 #endif
 }
