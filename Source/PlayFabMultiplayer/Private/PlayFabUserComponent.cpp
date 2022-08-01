@@ -2,10 +2,8 @@
 
 
 #include "PlayFabUserComponent.h"
-#include "PlayFabGameInstance.h"
-#include "MultiplayerGameMode.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PlayFab.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 
 UPlayFabUserComponent::UPlayFabUserComponent()
@@ -16,42 +14,42 @@ UPlayFabUserComponent::UPlayFabUserComponent()
 	SetIsReplicatedByDefault(true);
 }
 
-void UPlayFabUserComponent::BeginPlay()
-{
-	Super::BeginPlay();
+// void UPlayFabUserComponent::BeginPlay()
+// {
+// 	Super::BeginPlay();
+//
+// 	if (const APawn* Pawn = GetOwner<APawn>())
+// 	{
+// 		if (Pawn->IsLocallyControlled())
+// 		{
+// 			if (UPlayFabGameInstance* GInst = GetWorld()->GetGameInstance<UPlayFabGameInstance>())
+// 			{
+// 				SubmitPlayFabId(GInst->PlayFabId);
+// 			}
+// 		}
+// 	}
+// }
 
-	if (APawn* Pawn = GetOwner<APawn>())
-	{
-		if (Pawn->IsLocallyControlled())
-		{
-			if (UPlayFabGameInstance* GInst = GetWorld()->GetGameInstance<UPlayFabGameInstance>())
-			{
-				SubmitPlayFabId(GInst->PlayFabId);
-			}
-		}
-	}
-}
-
-void UPlayFabUserComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	Super::EndPlay(EndPlayReason);
-
-	if (AMultiplayerGameMode* GMode = GetWorld()->GetAuthGameMode<AMultiplayerGameMode>())
-	{
-		GMode->UnregisterPlayFabUser(PlayerMasterId);
-	}
-}
+// void UPlayFabUserComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+// {
+// 	Super::EndPlay(EndPlayReason);
+//
+// 	if (AMultiplayerGameMode* GMode = GetWorld()->GetAuthGameMode<AMultiplayerGameMode>())
+// 	{
+// 		GMode->UnregisterPlayFabUser(PlayerMasterId);
+// 	}
+// }
 
 void UPlayFabUserComponent::TickComponent(float DeltaTime, ELevelTick TickType,
                                           FActorComponentTickFunction* ThisTickFunction)
 {
-	if (!PlayerMasterId.IsEmpty())
+	if (!PlayFabId.IsEmpty())
 	{
-		if (PlayerMasterId.Len() == 16)
+		if (PlayFabId.Len() == 16)
 		{
 			PlayFab::ClientModels::FGetPlayerProfileRequest Request;
 			// TODO: Request.AuthenticationContext
-			Request.PlayFabId = PlayerMasterId;
+			Request.PlayFabId = PlayFabId;
 
 			PlayFabClientPtr ClientAPI = IPlayFabModuleInterface::Get().GetClientAPI();
 			ClientAPI->GetPlayerProfile(Request,
@@ -68,8 +66,6 @@ void UPlayFabUserComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 void UPlayFabUserComponent::OnGetPlayerProfileSuccess(const PlayFab::ClientModels::FGetPlayerProfileResult& Result)
 {
 	DisplayName = Result.PlayerProfile->DisplayName;
-	APawn *Pawn;
-	Pawn->getPlayer
 }
 
 void UPlayFabUserComponent::OnPlayFabError(const PlayFab::FPlayFabCppError& ErrorResult) const
@@ -82,22 +78,22 @@ void UPlayFabUserComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UPlayFabUserComponent, PlayerMasterId);
+	DOREPLIFETIME(UPlayFabUserComponent, PlayFabId);
 }
 
-void UPlayFabUserComponent::SubmitPlayFabId_Implementation(const FString& ClientPlayFabId)
-{
-	PlayerMasterId = ClientPlayFabId;
-	if (AMultiplayerGameMode* GMode = GetWorld()->GetAuthGameMode<AMultiplayerGameMode>())
-	{
-		if (PlayerMasterId.IsEmpty())
-		{
-			// apply abstract id for local testing
-			int NumUsers = GMode->GetNumPlayFabUsers();
-			PlayerMasterId = (NumUsers < DemoPlayFabUsers.Num())
-							? PlayerMasterId = DemoPlayFabUsers[NumUsers]
-							: FString::Printf(TEXT("LOCAL%d"), FMath::RandRange(100, 999));
-		}
-		GMode->RegisterPlayFabUser(PlayerMasterId);
-	}
-}
+// void UPlayFabUserComponent::SubmitPlayFabId_Implementation(const FString& ClientPlayFabId)
+// {
+// 	PlayerMasterId = ClientPlayFabId;
+// 	if (AMultiplayerGameMode* GMode = GetWorld()->GetAuthGameMode<AMultiplayerGameMode>())
+// 	{
+// 		if (PlayerMasterId.IsEmpty())
+// 		{
+// 			// apply abstract id for local testing
+// 			int NumUsers = GMode->GetNumPlayFabUsers();
+// 			PlayerMasterId = (NumUsers < DemoPlayFabUsers.Num())
+// 							? PlayerMasterId = DemoPlayFabUsers[NumUsers]
+// 							: FString::Printf(TEXT("LOCAL%d"), FMath::RandRange(100, 999));
+// 		}
+// 		GMode->RegisterPlayFabUser(PlayerMasterId);
+// 	}
+// }

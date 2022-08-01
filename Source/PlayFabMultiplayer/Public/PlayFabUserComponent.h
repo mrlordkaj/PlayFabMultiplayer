@@ -17,33 +17,33 @@ public:
 	UPlayFabUserComponent();
 
 protected:
-	virtual void BeginPlay() override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	// virtual void BeginPlay() override;
+	// virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
-
+	
 public:
 	/* Player ID in studio. */
 	UPROPERTY(BlueprintReadOnly, Replicated)
-	FString PlayerMasterId;
+	FString PlayFabId;
 
 	/* Player display name inside title. */
 	UPROPERTY(BlueprintReadOnly)
 	FString DisplayName;
 
+// private:
+// 	/* Use to send target map to server lobby. */
+// 	UFUNCTION(Server, Unreliable)
+// 	virtual void SubmitPlayFabId(const FString& ClientPlayFabId);
+
+// protected:
+// 	/* List samples of PlayFabId for testing on local. */
+// 	UPROPERTY(EditDefaultsOnly, Category = "Debugging")
+// 	TArray<FString> DemoPlayFabUsers;
+
 private:
-	/* Use to send target map to server lobby. */
-	UFUNCTION(Server, Unreliable)
-	virtual void SubmitPlayFabId(const FString& ClientPlayFabId);
-
-protected:
-	/* List samples of PlayFabId for testing on local. */
-	UPROPERTY(EditDefaultsOnly, Category = "Debugging")
-	TArray<FString> DemoPlayFabUsers;
-
-public:
 	void OnGetPlayerProfileSuccess(const PlayFab::ClientModels::FGetPlayerProfileResult& Result);
 	void OnPlayFabError(const PlayFab::FPlayFabCppError& ErrorResult) const;
 };
