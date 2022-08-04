@@ -25,45 +25,52 @@ void UPlayFabUserComponent::BeginPlay()
 			if (const UPlayFabGameInstance* GInst = GetWorld()->GetGameInstance<UPlayFabGameInstance>())
 			{
 				LoginContext = GInst->PlayFabLoginContext;
-				// SubmitPlayFabId(GInst->PlayFabId);
 			}
 		}
 	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s can be holded by pawn only."), *GetClass()->GetName())
+	}
 }
-
-// void UPlayFabUserComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
-// {
-// 	Super::EndPlay(EndPlayReason);
-//
-// 	if (AMultiplayerGameMode* GMode = GetWorld()->GetAuthGameMode<AMultiplayerGameMode>())
-// 	{
-// 		GMode->UnregisterPlayFabUser(PlayerMasterId);
-// 	}
-// }
 
 void UPlayFabUserComponent::TickComponent(float DeltaTime, ELevelTick TickType,
                                           FActorComponentTickFunction* ThisTickFunction)
 {
-	if (!PlayFabId.IsEmpty())
+	if (!bPlayFabLinked && PlayFabId.Len() == 16)
 	{
-		if (PlayFabId.Len() == 16)
-		{
-			OnPlayFabIdReceived();
-			
-			// PlayFab::ClientModels::FGetPlayerProfileRequest Request;
-			// // TODO: Request.AuthenticationContext
-			// Request.PlayFabId = PlayFabId;
-			//
-			// PlayFabClientPtr ClientAPI = IPlayFabModuleInterface::Get().GetClientAPI();
-			// ClientAPI->GetPlayerProfile(Request,
-			//                             PlayFab::UPlayFabClientAPI::FGetPlayerProfileDelegate::CreateUObject(
-			// 	                            this, &UPlayFabUserComponent::OnGetPlayerProfileSuccess),
-			//                             PlayFab::FPlayFabErrorDelegate::CreateUObject(
-			// 	                            this, &UPlayFabUserComponent::OnPlayFabError)
-			// );
-		}
-		SetComponentTickEnabled(false);
+		EventPlayFabLinked();
+		OnPlayFabLinked.Broadcast(PlayFabId);
+		bPlayFabLinked = true;
 	}
+
+	if (!bTeamAssiged && !TeamId.IsEmpty())
+	{
+		EventTeamAssigned();
+		OnTeamAssigned.Broadcast(TeamId);
+		bTeamAssiged = true;
+	}
+	
+	// if (!PlayFabId.IsEmpty())
+	// {
+	// 	if (PlayFabId.Len() == 16)
+	// 	{
+	// 		OnPlayFabIdReceived();
+	//
+	// 		// PlayFab::ClientModels::FGetPlayerProfileRequest Request;
+	// 		// // TODO: Request.AuthenticationContext
+	// 		// Request.PlayFabId = PlayFabId;
+	// 		//
+	// 		// PlayFabClientPtr ClientAPI = IPlayFabModuleInterface::Get().GetClientAPI();
+	// 		// ClientAPI->GetPlayerProfile(Request,
+	// 		//                             PlayFab::UPlayFabClientAPI::FGetPlayerProfileDelegate::CreateUObject(
+	// 		// 	                            this, &UPlayFabUserComponent::OnGetPlayerProfileSuccess),
+	// 		//                             PlayFab::FPlayFabErrorDelegate::CreateUObject(
+	// 		// 	                            this, &UPlayFabUserComponent::OnPlayFabError)
+	// 		// );
+	// 	}
+	// 	SetComponentTickEnabled(false);
+	// }
 }
 
 // void UPlayFabUserComponent::OnGetPlayerProfileSuccess(const PlayFab::ClientModels::FGetPlayerProfileResult& Result)
@@ -82,24 +89,8 @@ void UPlayFabUserComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UPlayFabUserComponent, PlayFabId);
+	DOREPLIFETIME(UPlayFabUserComponent, TeamId);
 }
-
-// void UPlayFabUserComponent::SubmitPlayFabId_Implementation(const FString& ClientPlayFabId)
-// {
-// 	PlayerMasterId = ClientPlayFabId;
-// 	if (AMultiplayerGameMode* GMode = GetWorld()->GetAuthGameMode<AMultiplayerGameMode>())
-// 	{
-// 		if (PlayerMasterId.IsEmpty())
-// 		{
-// 			// apply abstract id for local testing
-// 			int NumUsers = GMode->GetNumPlayFabUsers();
-// 			PlayerMasterId = (NumUsers < DemoPlayFabUsers.Num())
-// 							? PlayerMasterId = DemoPlayFabUsers[NumUsers]
-// 							: FString::Printf(TEXT("LOCAL%d"), FMath::RandRange(100, 999));
-// 		}
-// 		GMode->RegisterPlayFabUser(PlayerMasterId);
-// 	}
-// }
 
 void UPlayFabUserComponent::EventPlayFabError_Implementation(FPlayFabError Error, UObject* CustomData)
 {

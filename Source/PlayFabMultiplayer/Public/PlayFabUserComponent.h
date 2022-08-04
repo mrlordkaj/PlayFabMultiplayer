@@ -18,37 +18,52 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	// virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
-
-	UFUNCTION(BlueprintImplementableEvent, DisplayName="PlayFabId Received")
-	void OnPlayFabIdReceived();
 	
-public:
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTeamAssigned, FString, TeamId);
+
+	UPROPERTY(BlueprintAssignable)
+	FOnTeamAssigned OnTeamAssigned;
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayFabLinked, FString, PlayFabId);
+
+	UPROPERTY(BlueprintAssignable, DisplayName="On PlayFab Linked")
+	FOnPlayFabLinked OnPlayFabLinked;
+
+protected:
+	/* Internal event when PlayFab is linked. */
+	UFUNCTION(BlueprintImplementableEvent, DisplayName="PlayFab Linked")
+	void EventPlayFabLinked();
+
+	/* Internal event when team asssigned. */
+	UFUNCTION(BlueprintImplementableEvent, DisplayName="Team Assigned")
+	void EventTeamAssigned();
+
+private:
+	/* Flag for team assignation status. */
+	bool bTeamAssiged = false;
+
+	/* Flag for PlayFab linking status. */
+	bool bPlayFabLinked = false;
+
+protected:
 	/* FlayFab Authentication Context. */
 	UPROPERTY(BlueprintReadOnly)
 	UPlayFabAuthenticationContext* LoginContext;
-	
-	/* Master PlayFabId. */
+
+public:
 	UPROPERTY(BlueprintReadOnly, Replicated)
 	FString PlayFabId;
+
+	UPROPERTY(BlueprintReadOnly, Replicated)
+	FString TeamId;
 
 	// /* Player display name inside title. */
 	// UPROPERTY(BlueprintReadOnly)
 	// FString DisplayName;
-
-// private:
-// 	/* Use to send target map to server lobby. */
-// 	UFUNCTION(Server, Unreliable)
-// 	virtual void SubmitPlayFabId(const FString& ClientPlayFabId);
-
-// protected:
-// 	/* List samples of PlayFabId for testing on local. */
-// 	UPROPERTY(EditDefaultsOnly, Category = "Debugging")
-// 	TArray<FString> DemoPlayFabUsers;
 
 // private:
 // 	void OnGetPlayerProfileSuccess(const PlayFab::ClientModels::FGetPlayerProfileResult& Result);

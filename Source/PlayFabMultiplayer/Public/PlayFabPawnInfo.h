@@ -13,4 +13,7 @@ struct FPlayFabPawnInfo
 
 	UPROPERTY(BlueprintReadOnly)
 	FString PlayFabId;
+
+	UPROPERTY(BlueprintReadOnly)
+	FString TeamId;
 };

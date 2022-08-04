@@ -26,7 +26,7 @@ protected:
 	void PlayFapError(FPlayFabError Error, UObject* CustomData);
 
 	/* Get player's authentication context stored in game instance. */
-	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName="Get PlayFabAuth")
 	UPlayFabAuthenticationContext* GetLoginContext();
 
 	/* Get player's entity stored in game instance. */

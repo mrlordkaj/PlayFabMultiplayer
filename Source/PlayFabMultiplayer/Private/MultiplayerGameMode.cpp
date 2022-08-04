@@ -2,8 +2,8 @@
 
 
 #include "MultiplayerGameMode.h"
-#include "PlayFabMultiplayer.h"
 #include "GSDKUtils.h"
+#include "PlayFabMultiplayer.h"
 #include "PlayFabUserComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -24,10 +24,10 @@ APlayerController* AMultiplayerGameMode::Login(UPlayer* NewPlayer, ENetRole InRe
 {
 	APlayerController* Controller = Super::Login(NewPlayer, InRemoteRole, Portal, Options, UniqueId, ErrorMessage);
 
-	// TODO: get team
 	FPlayFabPawnInfo Info;
 	Info.PawnClass = UGameplayStatics::ParseOption(Options, "PawnClass");
 	Info.PlayFabId = UGameplayStatics::ParseOption(Options, "PlayFabId");
+	Info.TeamId = UGameplayStatics::ParseOption(Options, "Team");
 	PlayFabPawnInfoMap.Add(Controller, Info);
 	UpdateConnectedPlayers();
 	
@@ -77,6 +77,7 @@ APawn* AMultiplayerGameMode::SpawnDefaultPawnAtTransform_Implementation(AControl
 		for (UPlayFabUserComponent* User : Users)
 		{
 			User->PlayFabId = Info->PlayFabId;
+			User->TeamId = Info->TeamId;
 		}
 	}
 	
