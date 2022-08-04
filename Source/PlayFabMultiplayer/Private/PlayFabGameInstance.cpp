@@ -29,9 +29,7 @@ void UPlayFabGameInstance::Init()
 
 void UPlayFabGameInstance::OnStart()
 {
-#if UE_SERVER
 	UGSDKUtils::ReadyForPlayers();
-#endif
 }
 
 void UPlayFabGameInstance::OnGSDKShutdown()
@@ -61,12 +59,4 @@ void UPlayFabGameInstance::SetPlayFabLoginSession(FString PlayerId, UPlayFabJson
 	PlayFabId = PlayerId;
 	PlayFabEntity = PlayerEntity;
 	PlayFabLoginContext = AuthContext;
-}
-
-void UPlayFabGameInstance::GetPlayFabLoginSession(FString& PlayerId, UPlayFabJsonObject*& PlayerEntity,
-                                                  UPlayFabAuthenticationContext*& AuthContext)
-{
-	PlayerId = PlayFabId;
-	PlayerEntity = PlayFabEntity;
-	AuthContext = PlayFabLoginContext;
 }

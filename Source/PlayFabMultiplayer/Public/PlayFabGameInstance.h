@@ -39,23 +39,19 @@ public:
 	FString TravelTargetMap;
 
 	/* Store player login context from client side. */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY()
 	UPlayFabAuthenticationContext* PlayFabLoginContext;
 
 	/* Store player title entity from client side. */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY()
 	UPlayFabJsonObject* PlayFabEntity;
 
 	/* Store PlayFabId from client side. */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY()
 	FString PlayFabId;
 
 	/* When player login successfully, register their session here. */
 	UFUNCTION(BlueprintCallable, DisplayName = "Set PlayFab Session")
 	void SetPlayFabLoginSession(FString PlayerId, UPlayFabJsonObject* PlayerEntity,
 	                            UPlayFabAuthenticationContext* AuthContext);
-
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Get PlayFab Session")
-	void GetPlayFabLoginSession(FString& PlayerId, UPlayFabJsonObject* & PlayerEntity,
-	                            UPlayFabAuthenticationContext* & AuthContext);
 };
