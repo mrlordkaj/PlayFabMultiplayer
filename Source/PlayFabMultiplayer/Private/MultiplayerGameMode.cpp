@@ -3,13 +3,16 @@
 
 #include "MultiplayerGameMode.h"
 #include "GSDKUtils.h"
+#include "MultiplayerController.h"
 #include "PlayFabMultiplayer.h"
-#include "PlayFabUserComponent.h"
+#include "MultiplayerUserComponent.h"
+#include "GameFramework/GameSession.h"
 #include "Kismet/GameplayStatics.h"
 
 AMultiplayerGameMode::AMultiplayerGameMode()
 {
 	PrimaryActorTick.bCanEverTick = false;
+	PlayerControllerClass = AMultiplayerController::StaticClass();
 }
 
 void AMultiplayerGameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId,
@@ -23,14 +26,14 @@ APlayerController* AMultiplayerGameMode::Login(UPlayer* NewPlayer, ENetRole InRe
 	const FString& Options, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
 {
 	APlayerController* Controller = Super::Login(NewPlayer, InRemoteRole, Portal, Options, UniqueId, ErrorMessage);
-
-	FPlayFabPawnInfo Info;
-	Info.PawnClass = UGameplayStatics::ParseOption(Options, "PawnClass");
-	Info.PlayFabId = UGameplayStatics::ParseOption(Options, "PlayFabId");
-	Info.TeamId = UGameplayStatics::ParseOption(Options, "Team");
-	PlayFabPawnInfoMap.Add(Controller, Info);
-	UpdateConnectedPlayers();
-	
+	if (AMultiplayerController* MC = Cast<AMultiplayerController>(Controller))
+	{
+		MC->PlayFabId = UGameplayStatics::ParseOption(Options, "PlayFabId");
+		MC->PawnClass = UGameplayStatics::ParseOption(Options, "PawnClass");
+		MC->TeamId = UGameplayStatics::ParseOption(Options, "Team");
+		ConnectedPlayers.AddUnique(MC);
+		UpdateConnectedPlayers();
+	}
 	return Controller;
 }
 
@@ -38,28 +41,24 @@ void AMultiplayerGameMode::Logout(AController* ExitingPlayer)
 {
 	Super::Logout(ExitingPlayer);
 
-	PlayFabPawnInfoMap.Remove(ExitingPlayer);
+	ConnectedPlayers.Remove(Cast<AMultiplayerController>(ExitingPlayer));
 	UpdateConnectedPlayers();
 	
 #if UE_SERVER
-	if (ShutdownServerWhenNoPlayers && PlayFabPawnInfoMap.Num() < 1)
+	if (ShutdownServerWhenNoPlayers && ConnectedPlayers.Num() < 1)
 	{
 		FPlatformMisc::RequestExit(false);
 	}
-	
-	// if (ShutdownServerWhenNoPlayers) {
-	// 	ExitingPlayer->OnDestroyed.AddDynamic(this, &APlayFabGameMode::OnPlayerOut);
-	// }
 #endif
 }
 
 UClass* AMultiplayerGameMode::GetDefaultPawnClassForController_Implementation(AController* InController)
 {
-	if (const FPlayFabPawnInfo* Info = PlayFabPawnInfoMap.Find(InController))
+	if (const AMultiplayerController* MC = Cast<AMultiplayerController>(InController))
 	{
-		if (const TSubclassOf<APawn>* PawnClass = PawnClassMap.Find(Info->PawnClass))
+		if (const TSubclassOf<APawn>* PawnClass = PawnClassMap.Find(MC->PawnClass))
 		{
-			return Cast<UClass>(PawnClass->Get());
+			return PawnClass->Get();
 		}
 	}
 	return Super::GetDefaultPawnClassForController_Implementation(InController);
@@ -69,69 +68,31 @@ APawn* AMultiplayerGameMode::SpawnDefaultPawnAtTransform_Implementation(AControl
 	const FTransform& SpawnTransform)
 {
 	APawn* Pawn = Super::SpawnDefaultPawnAtTransform_Implementation(NewPlayer, SpawnTransform);
-
-	if (const FPlayFabPawnInfo* Info = PlayFabPawnInfoMap.Find(NewPlayer))
+	if (const AMultiplayerController* MC = Cast<AMultiplayerController>(NewPlayer))
 	{
-		TArray<UPlayFabUserComponent*> Users;
+		TArray<UMultiplayerUserComponent*> Users;
 		Pawn->GetComponents(Users);
-		for (UPlayFabUserComponent* User : Users)
+		for (UMultiplayerUserComponent* User : Users)
 		{
-			User->PlayFabId = Info->PlayFabId;
-			User->TeamId = Info->TeamId;
+			User->PlayFabId = MC->PlayFabId;
+			User->TeamId = MC->TeamId;
 		}
 	}
-	
 	return Pawn;
 }
 
-// void AMultiplayerGameMode::OnPlayerOut(AActor* PlayerController)
-// {
-// 	if (GetNumPlayers() < 1)
-// 	{
-// 		FPlatformMisc::RequestExit(false);
-// 	}
-// }
-
-// void AMultiplayerGameMode::RegisterPlayFabUser(FString PlayFabId)
-// {
-// 	UE_LOG(PlayFabMultiplayer, Warning, TEXT("PlayFabUser joined: %s"), *PlayFabId);
-// 	PlayFabUsers.AddUnique(PlayFabId);
-// 	UpdateConnectedPlayers();
-// }
-//
-// void AMultiplayerGameMode::UnregisterPlayFabUser(FString PlayFabId)
-// {
-// 	UE_LOG(PlayFabMultiplayer, Warning, TEXT("PlayFabUser exited: %s"), *PlayFabId);
-// 	PlayFabUsers.Remove(PlayFabId);
-// 	UpdateConnectedPlayers();
-// }
-//
-// int AMultiplayerGameMode::GetNumPlayFabUsers() const
-// {
-// 	return PlayFabUsers.Num();
-// }
-
 void AMultiplayerGameMode::UpdateConnectedPlayers() const
 {
-	// TArray<FConnectedPlayer> Players;
-	// for (FString PlayerId : PlayFabUsers)
-	// {
-	// 	FConnectedPlayer Player;
-	// 	Player.PlayerId = PlayerId;
-	// 	Players.Add(Player);
-	// }
-	// UE_LOG(PlayFabMultiplayer, Warning, TEXT("Total PlayFabUser(s): %d"), Players.Num());
-	// UGSDKUtils::UpdateConnectedPlayers(Players);
-
-	TArray<FPlayFabPawnInfo> Infos;
-	PlayFabPawnInfoMap.GenerateValueArray(Infos);
 	TArray<FConnectedPlayer> Players;
-	for (FPlayFabPawnInfo Info : Infos)
+	for (AMultiplayerController* MC : ConnectedPlayers)
 	{
-		FConnectedPlayer Player;
-		Player.PlayerId = Info.PlayFabId;
-		Players.Add(Player);
+		if (!MC->PlayFabId.IsEmpty())
+		{
+			FConnectedPlayer Player;
+			Player.PlayerId = MC->PlayFabId;
+			Players.Add(Player);
+		}
 	}
-	UE_LOG(PlayFabMultiplayer, Warning, TEXT("Total PlayFabUser(s): %d"), Players.Num());
+	UE_LOG(PlayFabMultiplayer, Warning, TEXT("Connected Player(s): %d"), Players.Num());
 	UGSDKUtils::UpdateConnectedPlayers(Players);
 }

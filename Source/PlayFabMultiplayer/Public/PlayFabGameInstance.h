@@ -34,10 +34,6 @@ protected:
 	void OnGSDKReadyForPlayers();
 
 public:
-	/* Store target map from client side. */
-	UPROPERTY(BlueprintReadWrite)
-	FString TravelTargetMap;
-
 	/* Store player login context from client side. */
 	UPROPERTY()
 	UPlayFabAuthenticationContext* PlayFabLoginContext;

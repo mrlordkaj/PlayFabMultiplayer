@@ -17,8 +17,12 @@ class PLAYFABMULTIPLAYER_API ALobbyGameMode : public AGameModeBase
 public:
 	ALobbyGameMode();
 
-	/* Receive target map from pawn */
-	void SetTargetMap(const FString ClientTargetMap);
+	virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId,
+	                      FString& ErrorMessage) override;
+	
+	virtual APlayerController* Login(UPlayer* NewPlayer, ENetRole InRemoteRole, const FString& Portal,
+	                                 const FString& Options, const FUniqueNetIdRepl& UniqueId,
+	                                 FString& ErrorMessage) override;
 
 protected:
 	/* Delay before travel to target map, in seconds. */
