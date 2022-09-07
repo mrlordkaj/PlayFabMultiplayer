@@ -20,13 +20,17 @@ public:
 
 	virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId,
 	                      FString& ErrorMessage) override;
+	
 	virtual APlayerController* Login(UPlayer* NewPlayer, ENetRole InRemoteRole, const FString& Portal,
 	                                 const FString& Options, const FUniqueNetIdRepl& UniqueId,
 	                                 FString& ErrorMessage) override;
+	
 	virtual void Logout(AController* ExitingPlayer) override;
 	
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
-	virtual APawn* SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform) override;
+	
+	virtual APawn* SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer,
+	                                                          const FTransform& SpawnTransform) override;
 	
 private:
 	/* Store connected players. */
@@ -37,9 +41,11 @@ private:
 	void UpdateConnectedPlayers() const;
 
 protected:
+	/* Should the server auto-shutdown when the last player left game. */
 	UPROPERTY(EditDefaultsOnly)
 	bool ShutdownServerWhenNoPlayers = true;
 
+	/* Define classes for player spawn at start or respawn in game. */
 	UPROPERTY(EditDefaultsOnly)
 	TMap<FString, TSubclassOf<APawn>> PawnClassMap;
 };

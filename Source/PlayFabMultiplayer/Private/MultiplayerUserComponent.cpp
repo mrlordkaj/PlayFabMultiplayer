@@ -17,33 +17,48 @@ UMultiplayerUserComponent::UMultiplayerUserComponent()
 void UMultiplayerUserComponent::TickComponent(float DeltaTime, ELevelTick TickType,
                                           FActorComponentTickFunction* ThisTickFunction)
 {
-	// check PlayFab link status
-	if (!bPlayFabLinked && PlayFabId.Len() == 16)
+	if (PlayFabId.Len() == 16 && !PlayFabId.Equals(PrevPlayFabId))
 	{
-		bPlayFabLinked = true;
-		EventPlayFabLinked();
+		PrevPlayFabId = PlayFabId;
 		OnPlayFabLinked.Broadcast(PlayFabId);
 	}
-	// check team assign status
-	if (!bTeamAssigned && !TeamId.IsEmpty())
+	if (!TeamId.IsEmpty() && !TeamId.Equals(PrevTeamId))
 	{
-		bTeamAssigned = true;
-		EventTeamAssigned();
+		PrevTeamId = TeamId;
 		OnTeamAssigned.Broadcast(TeamId);
 	}
-	// disable tick to save resource
-	if (bPlayFabLinked && bTeamAssigned) {
-		SetComponentTickEnabled(false);
-	}
+}
+
+FClientGetPlayerProfileRequest UMultiplayerUserComponent::MakeClientGetPlayerProfileRequest(FPlayerProfileViewConstraints ViewConstrains)
+{
+	FClientGetPlayerProfileRequest Request;
+	Request.PlayFabId = PlayFabId;
+	UPlayFabJsonObject* Json = Request.ProfileConstraints = UPlayFabJsonObject::ConstructJsonObject(GetWorld());
+	if (ViewConstrains.ShowAvatarUrl) Json->SetBoolField("ShowAvatarUrl", true);
+	if (ViewConstrains.ShowBannedUntil) Json->SetBoolField("ShowBannedUntil", true);
+	if (ViewConstrains.ShowCampaignAttributions) Json->SetBoolField("ShowCampaignAttributions", true);
+	if (ViewConstrains.ShowContactEmailAddresses) Json->SetBoolField("ShowContactEmailAddresses", true);
+	if (ViewConstrains.ShowCreated) Json->SetBoolField("ShowCreated", true);
+	if (ViewConstrains.ShowDisplayName) Json->SetBoolField("ShowDisplayName", true);
+	if (ViewConstrains.ShowExperimentVariants) Json->SetBoolField("ShowExperimentVariants", true);
+	if (ViewConstrains.ShowLastLogin) Json->SetBoolField("ShowLastLogin", true);
+	if (ViewConstrains.ShowLinkedAccounts) Json->SetBoolField("ShowLinkedAccounts", true);
+	if (ViewConstrains.ShowLocations) Json->SetBoolField("ShowLocations", true);
+	if (ViewConstrains.ShowMemberships) Json->SetBoolField("ShowMemberships", true);
+	if (ViewConstrains.ShowOrigination) Json->SetBoolField("ShowOrigination", true);
+	if (ViewConstrains.ShowPushNotificationRegistrations) Json->SetBoolField("ShowPushNotificationRegistrations", true);
+	if (ViewConstrains.ShowStatistics) Json->SetBoolField("ShowStatistics", true);
+	if (ViewConstrains.ShowTags) Json->SetBoolField("ShowTags", true);
+	if (ViewConstrains.ShowTotalValueToDateInUsd) Json->SetBoolField("ShowTotalValueToDateInUsd", true);
+	if (ViewConstrains.ShowValuesToDate) Json->SetBoolField("ShowValuesToDate", true);
+	Request.AuthenticationContext = GetPlayFabAuthContext();
+	return Request;
 }
 
 UPlayFabAuthenticationContext* UMultiplayerUserComponent::GetPlayFabAuthContext()
 {
-	if (const UPlayFabGameInstance* GInst = GetWorld()->GetGameInstance<UPlayFabGameInstance>())
-	{
-		return GInst->PlayFabLoginContext;
-	}
-	return nullptr;
+	UPlayFabGameInstance* GInst = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
+	return GInst ? GInst->PlayFabLoginContext : nullptr;
 }
 
 void UMultiplayerUserComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -54,7 +69,7 @@ void UMultiplayerUserComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 	DOREPLIFETIME(UMultiplayerUserComponent, TeamId);
 }
 
-void UMultiplayerUserComponent::EventPlayFabError_Implementation(FPlayFabError error, UObject* customData)
+void UMultiplayerUserComponent::EventPlayFabError(FPlayFabError error, UObject* customData)
 {
 	FString Msg = FString::Printf(TEXT("PlayFabError: %s (%d)"), *error.ErrorMessage, error.ErrorCode);
 	UKismetSystemLibrary::PrintString(GetWorld(), Msg, true, true, FLinearColor::Red);

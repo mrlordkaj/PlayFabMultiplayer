@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "PlayFabBaseModel.h"
 #include "PlayFabClientAPI.h"
+#include "PlayFabClientModels.h"
+#include "PlayFabStruct.h"
 #include "Components/ActorComponent.h"
 #include "MultiplayerUserComponent.generated.h"
 
@@ -34,17 +36,13 @@ public:
 	UPROPERTY(BlueprintAssignable, DisplayName="On PlayFab Error")
 	FOnPlayFabError OnPlayFabError;
 
+	/* Make request struct for GetPlayerProfile function. */
+	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName="Make GetPlayerProfile Request")
+	FClientGetPlayerProfileRequest MakeClientGetPlayerProfileRequest(FPlayerProfileViewConstraints ViewConstrains);
+
 protected:
-	/* Internal event when PlayFab account is linked to the pawn. */
-	UFUNCTION(BlueprintImplementableEvent, DisplayName="PlayFab Linked")
-	void EventPlayFabLinked();
-
-	/* Internal event when player be assigned to a team. */
-	UFUNCTION(BlueprintImplementableEvent, DisplayName="Team Assigned")
-	void EventTeamAssigned();
-
 	/* Internal event when PlayFab threw error message. */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, DisplayName="PlayFap Error")
+	UFUNCTION(BlueprintCallable, DisplayName="PlayFap Error")
 	void EventPlayFabError(FPlayFabError error, UObject* customData);
 
 	/* Get PlayFabAuthenticationContext stored in GameInstance. */
@@ -52,16 +50,18 @@ protected:
 	UPlayFabAuthenticationContext* GetPlayFabAuthContext();
 
 private:
-	/* Flag for team assignation status. */
-	bool bTeamAssigned = false;
+	/* Remember PlayFabId for change detection. */
+	FString PrevPlayFabId;
 
-	/* Flag for PlayFab linking status. */
-	bool bPlayFabLinked = false;
+	/* Remember TeamId for change detection. */
+	FString PrevTeamId;
 
 public:
+	/* Replicated PlayFabId. */
 	UPROPERTY(BlueprintReadOnly, Replicated, DisplayName="PlayFabId")
 	FString PlayFabId;
 
+	/* Replicated TeamId. */
 	UPROPERTY(BlueprintReadOnly, Replicated, DisplayName="TeamId")
 	FString TeamId;
 };

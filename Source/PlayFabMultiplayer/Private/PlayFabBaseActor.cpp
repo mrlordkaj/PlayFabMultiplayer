@@ -19,30 +19,19 @@ void APlayFabBaseActor::PlayFapError(FPlayFabError Error, UObject* CustomData)
 
 UPlayFabAuthenticationContext* APlayFabBaseActor::GetLoginContext()
 {
-	if (const UPlayFabGameInstance* GInst = GetWorld()->GetGameInstance<UPlayFabGameInstance>())
-	{
-		return GInst->PlayFabLoginContext;
-	}
-	return nullptr;
+	UPlayFabGameInstance* GInst = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
+	return GInst ? GInst->PlayFabLoginContext : nullptr;
 }
 
 UPlayFabJsonObject* APlayFabBaseActor::GetPlayFabEntity()
 {
-	UPlayFabJsonObject* Entity = nullptr;
 	UWorld* World = GetWorld();
-	if (const UPlayFabGameInstance* GInst = World->GetGameInstance<UPlayFabGameInstance>())
-	{
-		Entity = GInst->PlayFabEntity;
-	}
-	return Entity ? Entity : UPlayFabJsonObject::ConstructJsonObject(World);
+	UPlayFabGameInstance* GInst = World->GetGameInstance<UPlayFabGameInstance>();
+	return GInst ? GInst->PlayFabEntity : UPlayFabJsonObject::ConstructJsonObject(World);
 }
 
 FString APlayFabBaseActor::GetPlayFabId()
 {
-	FString Id;
-	if (const UPlayFabGameInstance* GInst = GetWorld()->GetGameInstance<UPlayFabGameInstance>())
-	{
-		Id = GInst->PlayFabId;
-	}
-	return Id;
+	UPlayFabGameInstance* GInst = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
+	return GInst ? GInst->PlayFabId : FString();
 }
