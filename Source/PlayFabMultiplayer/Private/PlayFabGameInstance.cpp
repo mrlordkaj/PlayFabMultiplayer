@@ -8,6 +8,8 @@
 
 void UPlayFabGameInstance::Init()
 {
+	Super::Init();
+
 	FOnGSDKShutdown_Dyn OnGsdkShutdown;
 	OnGsdkShutdown.BindDynamic(this, &UPlayFabGameInstance::OnGSDKShutdown);
 	FOnGSDKHealthCheck_Dyn OnGsdkHealthCheck;
@@ -29,6 +31,8 @@ void UPlayFabGameInstance::Init()
 
 void UPlayFabGameInstance::OnStart()
 {
+	Super::OnStart();
+
 	UGSDKUtils::ReadyForPlayers();
 }
 
