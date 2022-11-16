@@ -9,6 +9,7 @@
 #include "GameFramework/GameSession.h"
 #include "Kismet/GameplayStatics.h"
 
+
 AMultiplayerGameMode::AMultiplayerGameMode()
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -25,12 +26,13 @@ void AMultiplayerGameMode::PreLogin(const FString& Options, const FString& Addre
 APlayerController* AMultiplayerGameMode::Login(UPlayer* NewPlayer, ENetRole InRemoteRole, const FString& Portal,
 	const FString& Options, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
 {
-	APlayerController* Controller = Super::Login(NewPlayer, InRemoteRole, Portal, Options, UniqueId, ErrorMessage);
+	FString TeamId = UGameplayStatics::ParseOption(Options, "Team");
+	APlayerController* Controller = Super::Login(NewPlayer, InRemoteRole, TeamId, Options, UniqueId, ErrorMessage);
 	if (AMultiplayerController* MC = Cast<AMultiplayerController>(Controller))
 	{
 		MC->PlayFabId = UGameplayStatics::ParseOption(Options, "PlayFabId");
 		MC->PawnClass = UGameplayStatics::ParseOption(Options, "PawnClass");
-		MC->TeamId = UGameplayStatics::ParseOption(Options, "Team");
+		MC->TeamId = TeamId;
 		ConnectedPlayers.AddUnique(MC);
 		UpdateConnectedPlayers();
 	}
