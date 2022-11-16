@@ -18,9 +18,6 @@ class PLAYFABMULTIPLAYER_API AMultiplayerGameMode : public AGameModeBase
 public:
 	AMultiplayerGameMode();
 
-	virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId,
-	                      FString& ErrorMessage) override;
-	
 	virtual APlayerController* Login(UPlayer* NewPlayer, ENetRole InRemoteRole, const FString& Portal,
 	                                 const FString& Options, const FUniqueNetIdRepl& UniqueId,
 	                                 FString& ErrorMessage) override;
@@ -41,6 +38,10 @@ private:
 	void UpdateConnectedPlayers() const;
 
 protected:
+	/* The limiation of number players can join. */
+	UPROPERTY(EditDefaultsOnly)
+	uint8 MaximumPlayers = 0;
+
 	/* Should the server auto-shutdown when the last player left game. */
 	UPROPERTY(EditDefaultsOnly)
 	bool ShutdownServerWhenNoPlayers = true;

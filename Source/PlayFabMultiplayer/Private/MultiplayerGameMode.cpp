@@ -16,23 +16,22 @@ AMultiplayerGameMode::AMultiplayerGameMode()
 	PlayerControllerClass = AMultiplayerController::StaticClass();
 }
 
-void AMultiplayerGameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId,
-	FString& ErrorMessage)
-{
-	// TODO: accept or reject player
-	Super::PreLogin(Options, Address, UniqueId, ErrorMessage);
-}
-
 APlayerController* AMultiplayerGameMode::Login(UPlayer* NewPlayer, ENetRole InRemoteRole, const FString& Portal,
 	const FString& Options, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
 {
-	FString TeamId = UGameplayStatics::ParseOption(Options, "Team");
-	APlayerController* Controller = Super::Login(NewPlayer, InRemoteRole, TeamId, Options, UniqueId, ErrorMessage);
+	if (MaximumPlayers > 0 && GetNumPlayers() >= MaximumPlayers) {
+		ErrorMessage = "Reached maximum players.";
+	}
+	if (!ErrorMessage.IsEmpty()) {
+		UE_LOG(PlayFabMultiplayer, Error, TEXT("Login rejected: %s"), *ErrorMessage);
+		return nullptr;
+	}
+	APlayerController* Controller = Super::Login(NewPlayer, InRemoteRole, Portal, Options, UniqueId, ErrorMessage);
 	if (AMultiplayerController* MC = Cast<AMultiplayerController>(Controller))
 	{
 		MC->PlayFabId = UGameplayStatics::ParseOption(Options, "PlayFabId");
 		MC->PawnClass = UGameplayStatics::ParseOption(Options, "PawnClass");
-		MC->TeamId = TeamId;
+		MC->TeamId = Portal;
 		ConnectedPlayers.AddUnique(MC);
 		UpdateConnectedPlayers();
 	}
