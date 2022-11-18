@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PlayFabStruct.generated.h"
+#include "PlayFabTypes.generated.h"
 
 /**
  * https://docs.microsoft.com/en-us/rest/api/playfab/multiplayer/multiplayer-server/list-multiplayer-servers?view=playfab-rest

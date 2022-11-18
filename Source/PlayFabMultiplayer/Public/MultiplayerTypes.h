@@ -7,5 +7,5 @@
 
 UENUM(BlueprintType, DisplayName="Team Status")
 enum class ETeamStatus : uint8 {
-	Ally, Enemy, Neutral, Self, Invalid
+	Ally, Enemy, Neutral, Itself, Invalid
 };

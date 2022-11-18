@@ -6,7 +6,7 @@
 #include "PlayFabBaseModel.h"
 #include "PlayFabClientAPI.h"
 #include "PlayFabClientModels.h"
-#include "PlayFabStruct.h"
+#include "PlayFabTypes.h"
 #include "Components/ActorComponent.h"
 #include "MultiplayerUserComponent.generated.h"
 

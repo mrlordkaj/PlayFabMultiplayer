@@ -10,7 +10,7 @@ ETeamStatus UMultiplayerHelper::CheckTeamStatus(AActor* A, AActor* B)
 		return ETeamStatus::Invalid;
 	}
 	if (A == B) {
-		return ETeamStatus::Self;
+		return ETeamStatus::Itself;
 	}
 	UActorComponent* ComA = A->GetComponentByClass(UMultiplayerUserComponent::StaticClass());
 	UActorComponent* ComB = B->GetComponentByClass(UMultiplayerUserComponent::StaticClass());
