@@ -23,7 +23,6 @@ APlayerController* AMultiplayerGameMode::Login(UPlayer* NewPlayer, ENetRole InRe
 		ErrorMessage = "Reached maximum players.";
 	}
 	if (!ErrorMessage.IsEmpty()) {
-		UE_LOG(PlayFabMultiplayer, Error, TEXT("Login rejected: %s"), *ErrorMessage);
 		return nullptr;
 	}
 	APlayerController* Controller = Super::Login(NewPlayer, InRemoteRole, Portal, Options, UniqueId, ErrorMessage);
@@ -94,6 +93,6 @@ void AMultiplayerGameMode::UpdateConnectedPlayers() const
 			Players.Add(Player);
 		}
 	}
-	UE_LOG(PlayFabMultiplayer, Warning, TEXT("Connected Player(s): %d"), Players.Num());
+	UE_LOG(PlayFabMultiplayer, Display, TEXT("Connected Player(s): %d"), Players.Num());
 	UGSDKUtils::UpdateConnectedPlayers(Players);
 }
