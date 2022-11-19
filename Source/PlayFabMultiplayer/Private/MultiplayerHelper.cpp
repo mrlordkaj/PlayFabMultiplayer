@@ -17,10 +17,10 @@ ETeamStatus UMultiplayerHelper::CheckTeamStatus(AActor* A, AActor* B)
 	if (!ComA || !ComB) {
 		return ETeamStatus::Neutral;
 	}
-	UMultiplayerUserComponent* UserA = Cast<UMultiplayerUserComponent>(ComA);
-	UMultiplayerUserComponent* UserB = Cast<UMultiplayerUserComponent>(ComB);
-	if (UserA->TeamId.IsEmpty() || UserB->TeamId.IsEmpty()) {
+	FString TeamA = Cast<UMultiplayerUserComponent>(ComA)->TeamId;
+	FString TeamB = Cast<UMultiplayerUserComponent>(ComB)->TeamId;
+	if (TeamA.IsEmpty() || TeamB.IsEmpty()) {
 		return ETeamStatus::Neutral;
 	}
-	return (UserA->TeamId == UserB->TeamId) ? ETeamStatus::Ally : ETeamStatus::Enemy;
+	return (TeamA == TeamB) ? ETeamStatus::Ally : ETeamStatus::Enemy;
 }

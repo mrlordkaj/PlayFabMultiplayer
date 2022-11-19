@@ -2,31 +2,15 @@
 
 
 #include "MultiplayerUserComponent.h"
+#include "PlayFabMultiplayer.h"
 #include "PlayFabGameInstance.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 
 UMultiplayerUserComponent::UMultiplayerUserComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
-	PrimaryComponentTick.TickInterval = 1;
-	PrimaryComponentTick.bAllowTickOnDedicatedServer = false;
+	PrimaryComponentTick.bCanEverTick = false;
 	SetIsReplicatedByDefault(true);
-}
-
-void UMultiplayerUserComponent::TickComponent(float DeltaTime, ELevelTick TickType,
-                                          FActorComponentTickFunction* ThisTickFunction)
-{
-	if (PlayFabId.Len() == 16 && !PlayFabId.Equals(PrevPlayFabId))
-	{
-		PrevPlayFabId = PlayFabId;
-		OnPlayFabLinked.Broadcast(PlayFabId);
-	}
-	if (!TeamId.IsEmpty() && !TeamId.Equals(PrevTeamId))
-	{
-		PrevTeamId = TeamId;
-		OnTeamAssigned.Broadcast(TeamId);
-	}
 }
 
 FClientGetPlayerProfileRequest UMultiplayerUserComponent::MakeClientGetPlayerProfileRequest(FPlayerProfileViewConstraints ViewConstrains)
@@ -59,6 +43,25 @@ UPlayFabAuthenticationContext* UMultiplayerUserComponent::GetPlayFabAuthContext(
 {
 	UPlayFabGameInstance* GInst = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
 	return GInst ? GInst->PlayFabLoginContext : nullptr;
+}
+
+void UMultiplayerUserComponent::OnRep_PlayFabId()
+{
+	if (!GetOwner()->HasAuthority()) {
+		if (PlayFabId.Len() == 16) {
+			OnPlayFabLinked.Broadcast(PlayFabId);
+		}
+		else {
+			UE_LOG(PlayFabMultiplayer, Warning, TEXT("PlayFabId %s is not valid."), *PlayFabId);
+		}
+	}
+}
+
+void UMultiplayerUserComponent::OnRep_TeamId()
+{
+	if (!GetOwner()->HasAuthority()) {
+		OnTeamAssigned.Broadcast(TeamId);
+	}
 }
 
 void UMultiplayerUserComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

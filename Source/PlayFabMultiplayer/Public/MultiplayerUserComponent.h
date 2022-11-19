@@ -18,9 +18,7 @@ class PLAYFABMULTIPLAYER_API UMultiplayerUserComponent : public UActorComponent
 public:
 	UMultiplayerUserComponent();
 
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	                           FActorComponentTickFunction* ThisTickFunction) override;
-	
+public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTeamAssigned, FString, TeamId);
 	/* Broadcast event when team assigned. */
 	UPROPERTY(BlueprintAssignable, DisplayName="On Team Assigned")
@@ -36,7 +34,7 @@ public:
 	UPROPERTY(BlueprintAssignable, DisplayName="On PlayFab Error")
 	FOnPlayFabError OnPlayFabError;
 
-	/* Make request struct for GetPlayerProfile function. */
+	/* Makes request struct for GetPlayerProfile function. */
 	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName="Make GetPlayerProfile Request")
 	FClientGetPlayerProfileRequest MakeClientGetPlayerProfileRequest(FPlayerProfileViewConstraints ViewConstrains);
 
@@ -45,23 +43,23 @@ protected:
 	UFUNCTION(BlueprintCallable, DisplayName="PlayFap Error")
 	void EventPlayFabError(FPlayFabError error, UObject* customData);
 
-	/* Get PlayFabAuthenticationContext stored in GameInstance. */
+	/* Gets PlayFabAuthenticationContext stored in GameInstance. */
 	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName="Get PlayFabContext")
 	UPlayFabAuthenticationContext* GetPlayFabAuthContext();
 
 private:
-	/* Remember PlayFabId for change detection. */
-	FString PrevPlayFabId;
+	UFUNCTION()
+	void OnRep_PlayFabId();
 
-	/* Remember TeamId for change detection. */
-	FString PrevTeamId;
+	UFUNCTION()
+	void OnRep_TeamId();
 
 public:
 	/* Replicated PlayFabId. */
-	UPROPERTY(BlueprintReadOnly, Replicated, DisplayName="PlayFabId")
+	UPROPERTY(BlueprintReadWrite, ReplicatedUsing = OnRep_PlayFabId, DisplayName = "PlayFabId")
 	FString PlayFabId;
 
 	/* Replicated TeamId. */
-	UPROPERTY(BlueprintReadOnly, Replicated, DisplayName="TeamId")
+	UPROPERTY(BlueprintReadWrite, ReplicatedUsing = OnRep_TeamId, DisplayName = "TeamId")
 	FString TeamId;
 };
