@@ -26,9 +26,6 @@ public:
 	
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 	
-	virtual APawn* SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer,
-	                                                          const FTransform& SpawnTransform) override;
-	
 private:
 	/* Store connected players. */
 	UPROPERTY()

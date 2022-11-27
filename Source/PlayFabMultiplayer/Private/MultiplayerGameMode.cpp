@@ -54,31 +54,14 @@ void AMultiplayerGameMode::Logout(AController* ExitingPlayer)
 
 UClass* AMultiplayerGameMode::GetDefaultPawnClassForController_Implementation(AController* InController)
 {
-	if (const AMultiplayerController* MC = Cast<AMultiplayerController>(InController))
+	if (AMultiplayerController* MC = Cast<AMultiplayerController>(InController))
 	{
-		if (const TSubclassOf<APawn>* PawnClass = PawnClassMap.Find(MC->PawnClass))
+		if (TSubclassOf<APawn>* PawnClass = PawnClassMap.Find(MC->PawnClass))
 		{
 			return PawnClass->Get();
 		}
 	}
 	return Super::GetDefaultPawnClassForController_Implementation(InController);
-}
-
-APawn* AMultiplayerGameMode::SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer,
-	const FTransform& SpawnTransform)
-{
-	APawn* Pawn = Super::SpawnDefaultPawnAtTransform_Implementation(NewPlayer, SpawnTransform);
-	if (const AMultiplayerController* MC = Cast<AMultiplayerController>(NewPlayer))
-	{
-		TArray<UMultiplayerUserComponent*> Users;
-		Pawn->GetComponents(Users);
-		for (UMultiplayerUserComponent* User : Users)
-		{
-			User->PlayFabId = MC->PlayFabId;
-			User->TeamId = MC->TeamId;
-		}
-	}
-	return Pawn;
 }
 
 void AMultiplayerGameMode::UpdateConnectedPlayers() const

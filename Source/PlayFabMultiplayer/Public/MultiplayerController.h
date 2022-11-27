@@ -23,4 +23,7 @@ public:
 
     UPROPERTY(BlueprintReadOnly)
     FString TeamId;
+
+protected:
+    virtual void OnPossess(APawn* aPawn) override;
 };
