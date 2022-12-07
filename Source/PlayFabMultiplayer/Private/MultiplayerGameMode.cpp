@@ -44,12 +44,12 @@ void AMultiplayerGameMode::Logout(AController* ExitingPlayer)
 	ConnectedPlayers.Remove(Cast<AMultiplayerController>(ExitingPlayer));
 	UpdateConnectedPlayers();
 	
-#if UE_SERVER
-	if (ShutdownServerWhenNoPlayers && ConnectedPlayers.Num() < 1)
-	{
-		FPlatformMisc::RequestExit(false);
+	if (UKismetSystemLibrary::IsDedicatedServer(this)) {
+		if (ShutdownServerWhenNoPlayers && ConnectedPlayers.Num() < 1)
+		{
+			FPlatformMisc::RequestExit(false);
+		}
 	}
-#endif
 }
 
 UClass* AMultiplayerGameMode::GetDefaultPawnClassForController_Implementation(AController* InController)
