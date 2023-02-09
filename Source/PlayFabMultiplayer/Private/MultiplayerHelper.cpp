@@ -15,7 +15,7 @@ ETeamStatus UMultiplayerHelper::CheckTeamStatus(AActor* A, AActor* B)
 	UActorComponent* ComA = A->GetComponentByClass(UMultiplayerUserComponent::StaticClass());
 	UActorComponent* ComB = B->GetComponentByClass(UMultiplayerUserComponent::StaticClass());
 	if (!ComA || !ComB) {
-		return ETeamStatus::Neutral;
+		return ETeamStatus::Invalid;
 	}
 	FString TeamA = Cast<UMultiplayerUserComponent>(ComA)->TeamId;
 	FString TeamB = Cast<UMultiplayerUserComponent>(ComB)->TeamId;
