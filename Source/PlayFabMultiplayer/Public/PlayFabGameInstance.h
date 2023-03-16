@@ -6,6 +6,8 @@
 #include "Engine/GameInstance.h"
 #include "PlayFabAuthenticationContext.h"
 #include "PlayFabJsonObject.h"
+#include "PlayFab.h"
+#include "Core/PlayFabClientAPI.h"
 #include "PlayFabGameInstance.generated.h"
 
 /**
@@ -35,19 +37,5 @@ protected:
 
 public:
 	/* Store player login context from client side. */
-	UPROPERTY()
-	UPlayFabAuthenticationContext* PlayFabLoginContext;
-
-	/* Store player title entity from client side. */
-	UPROPERTY()
-	UPlayFabJsonObject* PlayFabEntity;
-
-	/* Store PlayFabId from client side. */
-	UPROPERTY()
-	FString PlayFabId;
-
-	/* When player login successfully, register their session here. */
-	UFUNCTION(BlueprintCallable, DisplayName = "Set PlayFab Session")
-	void SetPlayFabLoginSession(FString PlayerId, UPlayFabJsonObject* PlayerEntity,
-	                            UPlayFabAuthenticationContext* AuthContext);
+	PlayFab::ClientModels::FLoginResult PlayFabLogin;
 };

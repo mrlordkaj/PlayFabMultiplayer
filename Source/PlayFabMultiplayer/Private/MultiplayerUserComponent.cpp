@@ -41,8 +41,11 @@ FClientGetPlayerProfileRequest UMultiplayerUserComponent::MakeClientGetPlayerPro
 
 UPlayFabAuthenticationContext* UMultiplayerUserComponent::GetPlayFabAuthContext()
 {
-	UPlayFabGameInstance* GInst = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
-	return GInst ? GInst->PlayFabLoginContext : nullptr;
+	if (UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>())
+	{
+		return GI->PlayFabLogin.AuthenticationContext.Get();
+	}
+	return nullptr;
 }
 
 void UMultiplayerUserComponent::OnRep_PlayFabId()

@@ -6,6 +6,9 @@
 #include "PlayFabAuthenticationContext.h"
 #include "PlayFabBaseModel.h"
 #include "GameFramework/Actor.h"
+#include "PlayFab.h"
+#include "Core/PlayFabClientAPI.h"
+#include "PlayFabGameInstance.h"
 #include "PlayFabBaseActor.generated.h"
 
 UCLASS(DisplayName="PlayFab Base Actor")
@@ -14,14 +17,24 @@ class PLAYFABMULTIPLAYER_API APlayFabBaseActor : public AActor
 	GENERATED_BODY()
 
 public:
-	APlayFabBaseActor();
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FGenericDelegate);
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnErrorMessage, FString, Message);
+
+public:
+	APlayFabBaseActor();
+
+	virtual void BeginPlay() override;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnErrorMessage OnErrorMessage;
 
+private:
+	PlayFab::ClientModels::FLoginResult GetLoginResult();
+
 protected:
+	PlayFabClientPtr ClientAPI;
+
 	UFUNCTION(BlueprintCallable, DisplayName="PlayFab Error")
 	void PlayFapError(FPlayFabError Error, UObject* CustomData);
 
@@ -36,4 +49,10 @@ protected:
 	/* Get player's PlayFabId stored in game instance. */
 	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName="Get PlayFabId")
 	FString GetPlayFabId();
+
+public:
+	void OnError(const PlayFab::FPlayFabCppError& ErrorResult) const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool IsLoggingIn();
 };

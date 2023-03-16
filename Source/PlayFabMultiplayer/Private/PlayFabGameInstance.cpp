@@ -56,11 +56,3 @@ void UPlayFabGameInstance::OnGSDKReadyForPlayers()
 {
 	UE_LOG(PlayFabMultiplayer, Warning, TEXT("Server ready"));
 }
-
-void UPlayFabGameInstance::SetPlayFabLoginSession(FString PlayerId, UPlayFabJsonObject* PlayerEntity,
-                                                  UPlayFabAuthenticationContext* AuthContext)
-{
-	PlayFabId = PlayerId;
-	PlayFabEntity = PlayerEntity;
-	PlayFabLoginContext = AuthContext;
-}

@@ -2,12 +2,31 @@
 
 
 #include "PlayFabBaseActor.h"
-#include "PlayFabGameInstance.h"
+
+#include "PlayFab.h"
 #include "Kismet/KismetSystemLibrary.h"
+
+using namespace PlayFab::ClientModels;
 
 APlayFabBaseActor::APlayFabBaseActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
+}
+
+void APlayFabBaseActor::BeginPlay()
+{
+	Super::BeginPlay();
+
+	ClientAPI = IPlayFabModuleInterface::Get().GetClientAPI();
+}
+
+FLoginResult APlayFabBaseActor::GetLoginResult()
+{
+	if (UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>())
+	{
+		return GI->PlayFabLogin;
+	}
+	return FLoginResult();
 }
 
 void APlayFabBaseActor::PlayFapError(FPlayFabError Error, UObject* CustomData)
@@ -19,19 +38,38 @@ void APlayFabBaseActor::PlayFapError(FPlayFabError Error, UObject* CustomData)
 
 UPlayFabAuthenticationContext* APlayFabBaseActor::GetLoginContext()
 {
-	UPlayFabGameInstance* GInst = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
-	return GInst ? GInst->PlayFabLoginContext : nullptr;
+	return GetLoginResult().AuthenticationContext.Get();
 }
 
 UPlayFabJsonObject* APlayFabBaseActor::GetPlayFabEntity()
 {
-	UWorld* World = GetWorld();
-	UPlayFabGameInstance* GInst = World->GetGameInstance<UPlayFabGameInstance>();
-	return GInst ? GInst->PlayFabEntity : UPlayFabJsonObject::ConstructJsonObject(World);
+	UPlayFabJsonObject* D = UPlayFabJsonObject::ConstructJsonObject(GetWorld());
+	FLoginResult L = GetLoginResult();
+	if (L.EntityToken.IsValid())
+	{
+		if (FEntityKey* E = L.EntityToken.Get()->Entity.Get())
+		{
+			D->SetStringField(TEXT("Id"), E->Id);
+			D->SetStringField(TEXT("Type"), E->Type);
+			D->SetStringField(TEXT("TypeString"), E->Type);
+		}
+	}
+	return D;
 }
 
 FString APlayFabBaseActor::GetPlayFabId()
 {
-	UPlayFabGameInstance* GInst = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
-	return GInst ? GInst->PlayFabId : FString();
+	return GetLoginResult().PlayFabId;
+}
+
+void APlayFabBaseActor::OnError(const PlayFab::FPlayFabCppError& ErrorResult) const
+{
+	FString Msg = FString::Printf(TEXT("PlayFabError: %s (%d)"), *ErrorResult.ErrorMessage, ErrorResult.ErrorCode);
+	UKismetSystemLibrary::PrintString(GetWorld(), Msg, true, true, FLinearColor::Red);
+	OnErrorMessage.Broadcast(Msg);
+}
+
+bool APlayFabBaseActor::IsLoggingIn()
+{
+	return GetLoginResult().AuthenticationContext.IsValid();
 }
