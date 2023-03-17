@@ -18,6 +18,12 @@ struct FRegionLatency
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
 	float Latency;
+	
+	FRegionLatency(FString RegionName = TEXT(""), float RegionLatency = 0)
+	{
+		Region = RegionName;
+		Latency = RegionLatency;
+	}
 };
 
 /**

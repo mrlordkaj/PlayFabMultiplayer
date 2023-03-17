@@ -2,10 +2,13 @@
 
 
 #include "PlayFabLoginActor.h"
+#include "PlayFabMultiplayer.h"
+
+using namespace PlayFab::ClientModels;
 
 void APlayFabLoginActor::LoginWithEmail(FString Email, FString Password)
 {
-	PlayFab::ClientModels::FLoginWithEmailAddressRequest Request;
+	FLoginWithEmailAddressRequest Request;
 	Request.Email = Email;
 	Request.Password = Password;
 	ClientAPI->LoginWithEmailAddress(Request,
@@ -14,11 +17,15 @@ void APlayFabLoginActor::LoginWithEmail(FString Email, FString Password)
 	);
 }
 
-void APlayFabLoginActor::OnSuccess(const PlayFab::ClientModels::FLoginResult& Result)
+void APlayFabLoginActor::OnSuccess(const FLoginResult& Result)
 {
 	if (UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>())
 	{
 		GI->PlayFabLogin = Result;
 		OnLoginSuccess.Broadcast();
+	}
+	else
+	{
+		UE_LOG(PlayFabMultiplayer, Error, TEXT("Missing PlayFabGameInstance."));
 	}
 }

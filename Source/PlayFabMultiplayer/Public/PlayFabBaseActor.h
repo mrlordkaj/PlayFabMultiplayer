@@ -8,7 +8,6 @@
 #include "GameFramework/Actor.h"
 #include "PlayFab.h"
 #include "Core/PlayFabClientAPI.h"
-#include "PlayFabGameInstance.h"
 #include "PlayFabBaseActor.generated.h"
 
 UCLASS(DisplayName="PlayFab Base Actor")
