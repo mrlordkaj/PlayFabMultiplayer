@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "PlayFabBaseActor.h"
 #include "PlayFabTypes.h"
+#include "Core/PlayFabMultiplayerAPI.h"
 #include "PlayFabMatchActor.generated.h"
 
 /**
@@ -17,12 +18,26 @@ class PLAYFABMULTIPLAYER_API APlayFabMatchActor : public APlayFabBaseActor
 
 	APlayFabMatchActor();
 
+public:
+	virtual void BeginPlay() override;
+
 protected:
+	PlayFabMultiplayerPtr MultiplayerAPI;
+	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Matchmaking Settings")
 	TArray<FRegionLatency> RegionLatencies;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Matchmaking Settings")
 	int TicketTimeout = 60;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Matchmaking Settings")
+	PlayFab::FJsonKeeper Regions;
+
+	UPROPERTY(BlueprintReadWrite)
+	FString MatchQueue;
+
+	UPROPERTY(BlueprintReadWrite)
+	FString TicketId;
 
 public:
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
@@ -42,4 +57,7 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Category = "Matchmaking Result")
 	FString TargetMap;
+
+	UFUNCTION(BlueprintCallable)
+	void CreateTicket(FString MatchQueueName, FString TargetMapName);
 };

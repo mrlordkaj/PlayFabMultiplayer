@@ -2,6 +2,7 @@
 
 
 #include "PlayFabLoginActor.h"
+#include "PlayFabGameInstance.h"
 #include "PlayFabMultiplayer.h"
 
 using namespace PlayFab::ClientModels;

@@ -20,7 +20,6 @@ public:
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnErrorMessage, FString, Message);
 
-public:
 	APlayFabBaseActor();
 
 	virtual void BeginPlay() override;
@@ -34,19 +33,19 @@ private:
 protected:
 	PlayFabClientPtr ClientAPI;
 
-	UFUNCTION(BlueprintCallable, DisplayName="PlayFab Error")
+	UFUNCTION(BlueprintCallable)
 	void PlayFapError(FPlayFabError Error, UObject* CustomData);
 
 	/* Get player's authentication context stored in game instance. */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName="Get PlayFabAuth")
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 	UPlayFabAuthenticationContext* GetLoginContext();
 
 	/* Get player's entity stored in game instance. */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName="Get PlayFabEntity")
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 	UPlayFabJsonObject* GetPlayFabEntity();
 
 	/* Get player's PlayFabId stored in game instance. */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName="Get PlayFabId")
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FString GetPlayFabId();
 
 public:

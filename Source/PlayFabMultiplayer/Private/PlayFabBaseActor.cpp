@@ -2,8 +2,8 @@
 
 
 #include "PlayFabBaseActor.h"
-
 #include "PlayFab.h"
+#include "PlayFabGameInstance.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 using namespace PlayFab::ClientModels;
