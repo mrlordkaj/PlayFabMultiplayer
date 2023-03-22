@@ -31,7 +31,7 @@ APlayerController* ALobbyGameMode::Login(UPlayer* NewPlayer, ENetRole InRemoteRo
 			FTimerHandle Timer;
 			FTimerDelegate Delegate = FTimerDelegate::CreateUObject(this, &ALobbyGameMode::TravelTargetMap);
 			GetWorldTimerManager().SetTimer(Timer, Delegate, TravelDelay, false);
-			UE_LOG(PlayFabMultiplayer, Warning, TEXT("Going travel to '%s' after %d seconds"), *TargetMap, TravelDelay);
+			UE_LOG(LogPlayFabMultiplayer, Warning, TEXT("Going travel to '%s' after %d seconds"), *TargetMap, TravelDelay);
 		}
 	}
 	return Controller;
@@ -41,6 +41,6 @@ void ALobbyGameMode::TravelTargetMap() const
 {
 	if (!GetWorld()->ServerTravel(TargetMap))
 	{
-		UE_LOG(PlayFabMultiplayer, Error, TEXT("Cannot travel to '%s'"), *TargetMap);
+		UE_LOG(LogPlayFabMultiplayer, Error, TEXT("Cannot travel to '%s'"), *TargetMap);
 	}
 }

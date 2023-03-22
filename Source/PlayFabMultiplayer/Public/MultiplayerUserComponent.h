@@ -36,7 +36,7 @@ public:
 
 	/* Makes request struct for GetPlayerProfile function. */
 	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName="Make GetPlayerProfile Request")
-	FClientGetPlayerProfileRequest MakeClientGetPlayerProfileRequest(FPlayerProfileViewConstraints ViewConstrains);
+	FClientGetPlayerProfileRequest MakeClientGetPlayerProfileRequest(FPlayerProfileViewConstraintsTest ViewConstrains);
 
 protected:
 	/* Internal event when PlayFab threw error message. */

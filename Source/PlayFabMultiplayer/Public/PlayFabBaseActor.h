@@ -18,39 +18,49 @@ class PLAYFABMULTIPLAYER_API APlayFabBaseActor : public AActor
 public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FGenericDelegate);
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnErrorMessage, FString, Message);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGenericMessage, FString, Message);
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDelegateOnPlayFabError, FString, Name, FString, Message, int, Code);
 
 	APlayFabBaseActor();
 
 	virtual void BeginPlay() override;
 
-	UPROPERTY(BlueprintAssignable)
-	FOnErrorMessage OnErrorMessage;
-
-private:
-	PlayFab::ClientModels::FLoginResult GetLoginResult();
+	UPROPERTY(BlueprintAssignable, DisplayName = "On PlayFab Error")
+	FDelegateOnPlayFabError OnPlayFabError;
 
 protected:
 	PlayFabClientPtr ClientAPI;
 
-	UFUNCTION(BlueprintCallable)
-	void PlayFapError(FPlayFabError Error, UObject* CustomData);
+	PlayFab::FPlayFabErrorDelegate DefaultErrorDelegate;
 
-	/* Get player's authentication context stored in game instance. */
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	UPlayFabAuthenticationContext* GetLoginContext();
+	/* Get player's PlayFabId stored in game instance. */
+	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Get PlayFabId")
+	FString GetPlayFabId();
+
+	/* Get authentication context stored in game instance. */
+	FString GetEntityId();
 
 	/* Get player's entity stored in game instance. */
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	UPlayFabJsonObject* GetPlayFabEntity();
+	UPlayFabJsonObject* GetEntityKey();
 
-	/* Get player's PlayFabId stored in game instance. */
+	/* Get authentication context stored in game instance. */
+	TSharedPtr<UPlayFabAuthenticationContext> GetAuthenticationContextCpp();
+
+	/* Get authentication context stored in game instance. */
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	FString GetPlayFabId();
+	UPlayFabAuthenticationContext* GetAuthenticationContext();
+
+	/* Default PlayFabError event. */
+	void PlayFabErrorCpp(const PlayFab::FPlayFabCppError& Error);
+
+	/* Default PlayFabError event. */
+	UFUNCTION(BlueprintCallable)
+	void PlayFapError(FPlayFabError Error, UObject* CustomData);
 
 public:
-	void OnError(const PlayFab::FPlayFabCppError& ErrorResult) const;
-
+	/* Checks current login status. */
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool IsLoggingIn();
+	bool HasLogin();
 };

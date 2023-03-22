@@ -8,6 +8,7 @@
 #include "PlayFabJsonObject.h"
 #include "PlayFab.h"
 #include "Core/PlayFabClientAPI.h"
+#include "PlayFabTypes.h"
 #include "PlayFabGameInstance.generated.h"
 
 /**
@@ -36,6 +37,12 @@ protected:
 	void OnGSDKReadyForPlayers();
 
 public:
-	/* Store player login context from client side. */
-	PlayFab::ClientModels::FLoginResult PlayFabLogin;
+	/* The authentiacation context of login player. */
+	TSharedPtr<UPlayFabAuthenticationContext> AuthenticationContext;
+
+	/* The master id of login player. */
+	FString PlayFabId;
+
+	/* The title id of login player. */
+	FString EntityId;
 };

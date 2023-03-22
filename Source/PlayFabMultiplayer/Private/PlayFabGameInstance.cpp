@@ -38,7 +38,7 @@ void UPlayFabGameInstance::OnStart()
 
 void UPlayFabGameInstance::OnGSDKShutdown()
 {
-	UE_LOG(PlayFabMultiplayer, Warning, TEXT("Server shutdown"));
+	UE_LOG(LogPlayFabMultiplayer, Warning, TEXT("Server shutdown"));
 	FPlatformMisc::RequestExit(false);
 }
 
@@ -49,10 +49,10 @@ bool UPlayFabGameInstance::OnGSDKHealthCheck()
 
 void UPlayFabGameInstance::OnGSDKServerActive()
 {
-	UE_LOG(PlayFabMultiplayer, Warning, TEXT("Server active"));
+	UE_LOG(LogPlayFabMultiplayer, Warning, TEXT("Server active"));
 }
 
 void UPlayFabGameInstance::OnGSDKReadyForPlayers()
 {
-	UE_LOG(PlayFabMultiplayer, Warning, TEXT("Server ready"));
+	UE_LOG(LogPlayFabMultiplayer, Warning, TEXT("Server ready"));
 }

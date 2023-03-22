@@ -1,33 +1,37 @@
 // Copyright (C) 2022 Thinh Pham.
 
 
-#include "PlayFabBaseActor.h"
+#include "PlayFabBaseComponent.h"
 #include "PlayFabGameInstance.h"
 #include "PlayFabMultiplayer.h"
 
-using namespace PlayFab::ClientModels;
-
-APlayFabBaseActor::APlayFabBaseActor()
+UPlayFabBaseComponent::UPlayFabBaseComponent()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void APlayFabBaseActor::BeginPlay()
+void UPlayFabBaseComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	// create client api
+
+	// create common stuffs
 	ClientAPI = IPlayFabModuleInterface::Get().GetClientAPI();
-	// create default error delegate
-	DefaultErrorDelegate = PlayFab::FPlayFabErrorDelegate::CreateUObject(this, &APlayFabBaseActor::PlayFabErrorCpp);
+	DefaultErrorCpp = PlayFab::FPlayFabErrorDelegate::CreateUObject(this, &UPlayFabBaseComponent::PlayFabErrorCpp);
 }
 
-FString APlayFabBaseActor::GetEntityId()
+FString UPlayFabBaseComponent::GetMyMasterId()
+{
+	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
+	return GI->PlayFabId;
+}
+
+FString UPlayFabBaseComponent::GetMyEntityId()
 {
 	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
 	return GI->EntityId;
 }
 
-UPlayFabJsonObject* APlayFabBaseActor::GetEntityKey()
+UPlayFabJsonObject* UPlayFabBaseComponent::GetMyEntityKey()
 {
 	UPlayFabJsonObject* D = UPlayFabJsonObject::ConstructJsonObject(GetWorld());
 	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
@@ -38,38 +42,31 @@ UPlayFabJsonObject* APlayFabBaseActor::GetEntityKey()
 	return D;
 }
 
-TSharedPtr<UPlayFabAuthenticationContext> APlayFabBaseActor::GetAuthenticationContextCpp()
+TSharedPtr<UPlayFabAuthenticationContext> UPlayFabBaseComponent::GetAuthenticationContextCpp()
 {
 	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
 	return GI->AuthenticationContext;
 }
 
-UPlayFabAuthenticationContext* APlayFabBaseActor::GetAuthenticationContext()
+UPlayFabAuthenticationContext* UPlayFabBaseComponent::GetAuthenticationContext()
 {
 	return GetAuthenticationContextCpp().Get();
 }
 
-FString APlayFabBaseActor::GetPlayFabId()
-{
-	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
-	return GI->PlayFabId;
-}
-
-void APlayFabBaseActor::PlayFabErrorCpp(const PlayFab::FPlayFabCppError& Error)
+void UPlayFabBaseComponent::PlayFabErrorCpp(const PlayFab::FPlayFabCppError& Error)
 {
 	UE_LOG(LogPlayFabMultiplayer, Error, TEXT("%s"), *Error.GenerateErrorReport());
 	OnPlayFabError.Broadcast(Error.ErrorName, Error.ErrorMessage, Error.ErrorCode);
 }
 
-void APlayFabBaseActor::PlayFapError(FPlayFabError Error, UObject* CustomData)
+void UPlayFabBaseComponent::PlayFapError(FPlayFabError Error, UObject* CustomData)
 {
 	UE_LOG(LogPlayFabMultiplayer, Error, TEXT("%s"), *Error.ErrorDetails);
 	OnPlayFabError.Broadcast(Error.ErrorName, Error.ErrorMessage, Error.ErrorCode);
 }
 
-bool APlayFabBaseActor::HasLogin()
+bool UPlayFabBaseComponent::HasLogin()
 {
 	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
 	return GI->AuthenticationContext.IsValid();
 }
-

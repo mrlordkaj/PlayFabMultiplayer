@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "PlayFabBaseActor.h"
-#include "PlayFabTypes.h"
+#include "PlayFabEnums.h"
 #include "Core/PlayFabMultiplayerAPI.h"
 #include "PlayFabMatchActor.generated.h"
+
+using namespace PlayFab::MultiplayerModels;
 
 /**
  * 
@@ -16,6 +18,8 @@ class PLAYFABMULTIPLAYER_API APlayFabMatchActor : public APlayFabBaseActor
 {
 	GENERATED_BODY()
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FMatchFound, FString, Server, FString, Portal);
+
 	APlayFabMatchActor();
 
 public:
@@ -24,40 +28,59 @@ public:
 protected:
 	PlayFabMultiplayerPtr MultiplayerAPI;
 	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Matchmaking Settings")
-	TArray<FRegionLatency> RegionLatencies;
+	UPROPERTY(EditAnywhere, Category = "Matchmaking Settings")
+	TMap<EAzureRegion, float> RegionLatencies;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Matchmaking Settings")
+	UPROPERTY(EditAnywhere, Category = "Matchmaking Settings", meta = (UIMin = "30", UIMax = "180", ClampMin = "30", ClampMax = "180"))
 	int TicketTimeout = 60;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Matchmaking Settings")
-	PlayFab::FJsonKeeper Regions;
+	UPROPERTY(EditAnywhere, Category = "Matchmaking Settings", meta = (UIMin = "7", UIMax = "10", ClampMin = "7", ClampMax = "10"))
+	float RefreshTicketPeriod = 7;
 
-	UPROPERTY(BlueprintReadWrite)
-	FString MatchQueue;
-
-	UPROPERTY(BlueprintReadWrite)
-	FString TicketId;
+	UPROPERTY(EditAnywhere, Category = "Matchmaking Settings")
+	bool bAutoRenewTicket = true;
 
 public:
-	UPROPERTY(BlueprintAssignable, BlueprintCallable)
-	FGenericDelegate OnMatchFound;
+	/* Broadcast event on match found. Message is connection address. */
+	UPROPERTY(BlueprintAssignable)
+	FMatchFound OnMatchFound;
 
-	UPROPERTY(BlueprintAssignable, BlueprintCallable)
-	FGenericDelegate OnTicketCancel;
+	/* Broadcast event on ticket cancel. Message is the reason. */
+	UPROPERTY(BlueprintAssignable)
+	FGenericMessage OnTicketCancel;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Matchmaking Result")
-	FString ServerAddress;
+	UPROPERTY(BlueprintReadOnly)
+	FString TicketStatus;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Matchmaking Result")
 	FString PawnClass;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Matchmaking Result")
-	FString TeamId;
-
-	UPROPERTY(BlueprintReadWrite, Category = "Matchmaking Result")
+	UPROPERTY(BlueprintReadOnly, Category = "Matchmaking Result")
 	FString TargetMap;
 
 	UFUNCTION(BlueprintCallable)
-	void CreateTicket(FString MatchQueueName, FString TargetMapName);
+	void CreateTicket(FString QueueName, FString TargetMapName);
+
+	UFUNCTION(BlueprintCallable)
+	void CancelTicket();
+
+private:
+	/* The create matchmaking ticket request. */
+	FCreateMatchmakingTicketRequest CreateTicketRequest;
+
+	/* The get matchmaking ticket request. */
+	FGetMatchmakingTicketRequest GetTicketRequest;
+
+	/* Callback on create matchmaking ticket success. */
+	void OnCreateTicketSuccess(const FCreateMatchmakingTicketResult& Result);
+
+	/* Callback on get matchmaking ticket success. */
+	void OnGetTicketSuccess(const FGetMatchmakingTicketResult& Result);
+
+	/* Callback on get match success. */
+	void OnGetMatchSuccess(const FGetMatchResult& Result);
+
+	FTimerHandle RefreshTicketTimer;
+
+	void RefreshTicket();
 };

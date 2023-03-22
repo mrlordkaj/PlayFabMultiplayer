@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleInterface.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(PlayFabMultiplayer, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogPlayFabMultiplayer, Log, All);
 
 class FPlayFabMultiplayerModule : public IModuleInterface
 {

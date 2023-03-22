@@ -76,6 +76,6 @@ void AMultiplayerGameMode::UpdateConnectedPlayers() const
 			Players.Add(Player);
 		}
 	}
-	UE_LOG(PlayFabMultiplayer, Display, TEXT("Connected Player(s): %d"), Players.Num());
+	UE_LOG(LogPlayFabMultiplayer, Display, TEXT("Connected Player(s): %d"), Players.Num());
 	UGSDKUtils::UpdateConnectedPlayers(Players);
 }

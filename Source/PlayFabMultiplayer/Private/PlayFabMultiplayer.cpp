@@ -17,6 +17,6 @@ void FPlayFabMultiplayerModule::ShutdownModule()
 
 #undef LOCTEXT_NAMESPACE
 
-IMPLEMENT_MODULE(FPlayFabMultiplayerModule, PlayFabMultiplayer)
+IMPLEMENT_MODULE(FPlayFabMultiplayerModule, LogPlayFabMultiplayer)
 
-DEFINE_LOG_CATEGORY(PlayFabMultiplayer);
+DEFINE_LOG_CATEGORY(LogPlayFabMultiplayer);

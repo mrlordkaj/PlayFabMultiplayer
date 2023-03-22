@@ -5,32 +5,19 @@
 #include "CoreMinimal.h"
 #include "PlayFabTypes.generated.h"
 
-/**
- * https://docs.microsoft.com/en-us/rest/api/playfab/multiplayer/multiplayer-server/list-multiplayer-servers?view=playfab-rest
- */
-USTRUCT(BlueprintType)
-struct FRegionLatency
+UENUM(BlueprintType, DisplayName = "PlayFab Login Method")
+enum class EPlayFabLoginMethod : uint8
 {
-	GENERATED_BODY()
-
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
-	FString Region;
-
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
-	float Latency;
-	
-	FRegionLatency(FString RegionName = TEXT(""), float RegionLatency = 0)
-	{
-		Region = RegionName;
-		Latency = RegionLatency;
-	}
+	PlayFab,
+	EmailAddress,
+	Facebook
 };
 
 /**
  * https://docs.microsoft.com/en-us/rest/api/playfab/client/account-management/get-player-profile?view=playfab-rest#playerprofileviewconstraints
  */
 USTRUCT(BlueprintType)
-struct FPlayerProfileViewConstraints
+struct FPlayerProfileViewConstraintsTest
 {
 	GENERATED_BODY()
 

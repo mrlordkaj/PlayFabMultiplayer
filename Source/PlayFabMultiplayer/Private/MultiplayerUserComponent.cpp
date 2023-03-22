@@ -13,7 +13,7 @@ UMultiplayerUserComponent::UMultiplayerUserComponent()
 	SetIsReplicatedByDefault(true);
 }
 
-FClientGetPlayerProfileRequest UMultiplayerUserComponent::MakeClientGetPlayerProfileRequest(FPlayerProfileViewConstraints ViewConstrains)
+FClientGetPlayerProfileRequest UMultiplayerUserComponent::MakeClientGetPlayerProfileRequest(FPlayerProfileViewConstraintsTest ViewConstrains)
 {
 	FClientGetPlayerProfileRequest Request;
 	Request.PlayFabId = PlayFabId;
@@ -41,11 +41,8 @@ FClientGetPlayerProfileRequest UMultiplayerUserComponent::MakeClientGetPlayerPro
 
 UPlayFabAuthenticationContext* UMultiplayerUserComponent::GetPlayFabAuthContext()
 {
-	if (UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>())
-	{
-		return GI->PlayFabLogin.AuthenticationContext.Get();
-	}
-	return nullptr;
+	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
+	return GI->AuthenticationContext.Get();
 }
 
 void UMultiplayerUserComponent::OnRep_PlayFabId()
@@ -55,7 +52,7 @@ void UMultiplayerUserComponent::OnRep_PlayFabId()
 			OnPlayFabLinked.Broadcast(PlayFabId);
 		}
 		else {
-			UE_LOG(PlayFabMultiplayer, Warning, TEXT("PlayFabId %s is not valid."), *PlayFabId);
+			UE_LOG(LogPlayFabMultiplayer, Warning, TEXT("PlayFabId %s is not valid."), *PlayFabId);
 		}
 	}
 }
