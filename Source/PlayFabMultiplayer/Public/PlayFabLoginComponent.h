@@ -10,7 +10,7 @@
 /**
  * 
  */
-UCLASS(ClassGroup = (PlayFab), meta = (BlueprintSpawnableComponent), DisplayName = "PlayFab Login")
+UCLASS(ClassGroup = (PlayFab), meta = (BlueprintSpawnableComponent))
 class PLAYFABMULTIPLAYER_API UPlayFabLoginComponent : public UPlayFabBaseComponent
 {
 	GENERATED_BODY()

@@ -14,6 +14,64 @@ enum class EPlayFabLoginMethod : uint8
 };
 
 /**
+ * AzureRegion
+ */
+UENUM(BlueprintType)
+enum class EPlayFabRegion : uint8
+{
+	AustraliaEast = 0 UMETA(DisplayName = "AustraliaEast"),
+	AustraliaSoutheast = 1 UMETA(DisplayName = "AustraliaSoutheast"),
+	BrazilSouth = 2 UMETA(DisplayName = "BrazilSouth"),
+	CentralUs = 3 UMETA(DisplayName = "CentralUs"),
+	EastAsia = 4 UMETA(DisplayName = "EastAsia"),
+	EastUs = 5 UMETA(DisplayName = "EastUs"),
+	EastUs2 = 6 UMETA(DisplayName = "EastUs2"),
+	JapanEast = 7 UMETA(DisplayName = "JapanEast"),
+	JapanWest = 8 UMETA(DisplayName = "JapanWest"),
+	NorthCentralUs = 9 UMETA(DisplayName = "NorthCentralUs"),
+	NorthEurope = 10 UMETA(DisplayName = "NorthEurope"),
+	SouthCentralUs = 11 UMETA(DisplayName = "SouthCentralUs"),
+	SoutheastAsia = 12 UMETA(DisplayName = "SoutheastAsia"),
+	WestEurope = 13 UMETA(DisplayName = "WestEurope"),
+	WestUs = 14 UMETA(DisplayName = "WestUs"),
+	SouthAfricaNorth = 15 UMETA(DisplayName = "SouthAfricaNorth"),
+	WestCentralUs = 16 UMETA(DisplayName = "WestCentralUs"),
+	KoreaCentral = 17 UMETA(DisplayName = "KoreaCentral"),
+	FranceCentral = 18 UMETA(DisplayName = "FranceCentral"),
+	WestUs2 = 19 UMETA(DisplayName = "WestUs2"),
+	CentralIndia = 20 UMETA(DisplayName = "CentralIndia"),
+	UaeNorth = 21 UMETA(DisplayName = "UaeNorth"),
+	UkSouth = 22 UMETA(DisplayName = "UkSouth"),
+};
+
+USTRUCT(BlueprintType)
+struct FPlayFabLatency
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EPlayFabRegion Region;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Latency;
+};
+
+USTRUCT(BlueprintType)
+struct FPlayFabUserAttributes
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FPlayFabLatency> Latencies;
+
+	UPROPERTY(BlueprintReadWrite)
+	FString DisplayName;
+
+	UPROPERTY(BlueprintReadWrite)
+	FString AvatarUrl;
+};
+
+/**
  * https://docs.microsoft.com/en-us/rest/api/playfab/client/account-management/get-player-profile?view=playfab-rest#playerprofileviewconstraints
  */
 USTRUCT(BlueprintType)

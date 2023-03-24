@@ -19,7 +19,9 @@ class PLAYFABMULTIPLAYER_API UPlayFabBaseComponent : public UActorComponent
 public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDelegatePlayFabGeneric);
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDelegateOnPlayFabError, FString, Name, FString, Message, int, Code);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateMessage, FString, Message);
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDelegatePlayFabError, FString, Name, FString, Message, int, Code);
 
 	UPlayFabBaseComponent();
 
@@ -32,26 +34,26 @@ protected:
 	PlayFab::FPlayFabErrorDelegate DefaultErrorCpp;
 
 	UPROPERTY(BlueprintAssignable, DisplayName = "On PlayFab Error")
-	FDelegateOnPlayFabError OnPlayFabError;
+	FDelegatePlayFabError OnPlayFabError;
 
 	/* Gets PlayFabId stored in game instance. */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Get MyMasterId")
-	FString GetMyMasterId();
+	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Get Login PlayFabId")
+	FString GetLoginPlayFabId();
 
 	/* Gets EntityId stored in game instance. */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Get MyEntityId")
-	FString GetMyEntityId();
+	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Get Login EntityId")
+	FString GetLoginEntityId();
 
 	/* Generates EntityKey for blueprint usage. */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Get MyEntityKey")
-	UPlayFabJsonObject* GetMyEntityKey();
+	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Get Login EntityKey")
+	UPlayFabJsonObject* GetLoginEntityKey();
 
 	/* Gets authentication context stored in game instance. */
-	TSharedPtr<UPlayFabAuthenticationContext> GetAuthenticationContextCpp();
+	TSharedPtr<UPlayFabAuthenticationContext> GetLoginContextCpp();
 
 	/* Gets authentication context stored in game instance. */
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	UPlayFabAuthenticationContext* GetAuthenticationContext();
+	UPlayFabAuthenticationContext* GetLoginContext();
 
 	/* Default PlayFabError event. */
 	void PlayFabErrorCpp(const PlayFab::FPlayFabCppError& Error);

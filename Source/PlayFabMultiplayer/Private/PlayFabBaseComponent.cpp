@@ -19,22 +19,23 @@ void UPlayFabBaseComponent::BeginPlay()
 	DefaultErrorCpp = PlayFab::FPlayFabErrorDelegate::CreateUObject(this, &UPlayFabBaseComponent::PlayFabErrorCpp);
 }
 
-FString UPlayFabBaseComponent::GetMyMasterId()
+FString UPlayFabBaseComponent::GetLoginPlayFabId()
 {
 	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
 	return GI->PlayFabId;
 }
 
-FString UPlayFabBaseComponent::GetMyEntityId()
+FString UPlayFabBaseComponent::GetLoginEntityId()
 {
 	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
 	return GI->EntityId;
 }
 
-UPlayFabJsonObject* UPlayFabBaseComponent::GetMyEntityKey()
+UPlayFabJsonObject* UPlayFabBaseComponent::GetLoginEntityKey()
 {
-	UPlayFabJsonObject* D = UPlayFabJsonObject::ConstructJsonObject(GetWorld());
-	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
+	UWorld* W = GetWorld();
+	UPlayFabJsonObject* D = UPlayFabJsonObject::ConstructJsonObject(W);
+	UPlayFabGameInstance* GI = W->GetGameInstance<UPlayFabGameInstance>();
 	if (!GI->EntityId.IsEmpty()) {
 		D->SetStringField(TEXT("Id"), GI->EntityId);
 		D->SetStringField(TEXT("Type"), TEXT("title_player_account"));
@@ -42,15 +43,15 @@ UPlayFabJsonObject* UPlayFabBaseComponent::GetMyEntityKey()
 	return D;
 }
 
-TSharedPtr<UPlayFabAuthenticationContext> UPlayFabBaseComponent::GetAuthenticationContextCpp()
+TSharedPtr<UPlayFabAuthenticationContext> UPlayFabBaseComponent::GetLoginContextCpp()
 {
 	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
 	return GI->AuthenticationContext;
 }
 
-UPlayFabAuthenticationContext* UPlayFabBaseComponent::GetAuthenticationContext()
+UPlayFabAuthenticationContext* UPlayFabBaseComponent::GetLoginContext()
 {
-	return GetAuthenticationContextCpp().Get();
+	return GetLoginContextCpp().Get();
 }
 
 void UPlayFabBaseComponent::PlayFabErrorCpp(const PlayFab::FPlayFabCppError& Error)
