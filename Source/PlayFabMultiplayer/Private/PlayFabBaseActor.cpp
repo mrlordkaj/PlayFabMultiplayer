@@ -18,16 +18,16 @@ void APlayFabBaseActor::BeginPlay()
 	// create client api
 	ClientAPI = IPlayFabModuleInterface::Get().GetClientAPI();
 	// create default error delegate
-	DefaultErrorDelegate = PlayFab::FPlayFabErrorDelegate::CreateUObject(this, &APlayFabBaseActor::PlayFabErrorCpp);
+	DefaultErrorCpp = PlayFab::FPlayFabErrorDelegate::CreateUObject(this, &APlayFabBaseActor::PlayFabErrorCpp);
 }
 
-FString APlayFabBaseActor::GetEntityId()
+FString APlayFabBaseActor::GetLoginEntityId()
 {
 	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
 	return GI->EntityId;
 }
 
-UPlayFabJsonObject* APlayFabBaseActor::GetEntityKey()
+UPlayFabJsonObject* APlayFabBaseActor::GetLoginEntityKey()
 {
 	UPlayFabJsonObject* D = UPlayFabJsonObject::ConstructJsonObject(GetWorld());
 	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
@@ -38,18 +38,18 @@ UPlayFabJsonObject* APlayFabBaseActor::GetEntityKey()
 	return D;
 }
 
-TSharedPtr<UPlayFabAuthenticationContext> APlayFabBaseActor::GetAuthenticationContextCpp()
+TSharedPtr<UPlayFabAuthenticationContext> APlayFabBaseActor::GetLoginContextCpp()
 {
 	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
 	return GI->AuthenticationContext;
 }
 
-UPlayFabAuthenticationContext* APlayFabBaseActor::GetAuthenticationContext()
+UPlayFabAuthenticationContext* APlayFabBaseActor::GetLoginContext()
 {
-	return GetAuthenticationContextCpp().Get();
+	return GetLoginContextCpp().Get();
 }
 
-FString APlayFabBaseActor::GetPlayFabId()
+FString APlayFabBaseActor::GetLoginPlayFabId()
 {
 	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
 	return GI->PlayFabId;

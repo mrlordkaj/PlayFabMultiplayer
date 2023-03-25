@@ -76,23 +76,13 @@ void UPlayFabLoginComponent::LoginEmailAddress(FString Email, FString Password, 
 		DefaultErrorCpp);
 }
 
-bool UPlayFabLoginComponent::IsValidUsername(FString Username)
+void UPlayFabLoginComponent::Logout()
 {
-	FRegexPattern P(TEXT("[\\w\\d]{4,64}"));
-	FRegexMatcher M(P, Username);
-	return M.FindNext();
-}
-
-bool UPlayFabLoginComponent::IsValidEmail(FString Email)
-{
-	FRegexPattern P(TEXT("[\\w\\d]{3,}@[\\w\\d]+\\.[\\w\\d]{2,}"));
-	FRegexMatcher M(P, Email);
-	return M.FindNext();
-}
-
-bool UPlayFabLoginComponent::IsValidPassword(FString Password)
-{
-	return Password.Len() >= 3;
+	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
+	GI->AuthenticationContext = nullptr;
+	GI->PlayFabId = TEXT("");
+	GI->EntityId = TEXT("");
+	UGameplayStatics::DeleteGameInSlot(LOGIN_SAVE_SLOT, 0);
 }
 
 void UPlayFabLoginComponent::LoginSuccess(const FLoginResult& Result)

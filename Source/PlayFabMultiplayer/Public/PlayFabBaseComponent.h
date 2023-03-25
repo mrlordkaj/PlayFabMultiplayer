@@ -19,7 +19,7 @@ class PLAYFABMULTIPLAYER_API UPlayFabBaseComponent : public UActorComponent
 public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDelegatePlayFabGeneric);
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateMessage, FString, Message);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegatePlayFabMessage, FString, Message);
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDelegatePlayFabError, FString, Name, FString, Message, int, Code);
 

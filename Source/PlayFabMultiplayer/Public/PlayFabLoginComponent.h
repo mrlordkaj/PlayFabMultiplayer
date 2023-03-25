@@ -18,10 +18,11 @@ class PLAYFABMULTIPLAYER_API UPlayFabLoginComponent : public UPlayFabBaseCompone
 protected:
 	virtual void BeginPlay() override;
 
-protected:
+public:
 	UPROPERTY(BlueprintAssignable)
 	FDelegatePlayFabGeneric OnLoginSuccess;
 
+protected:
 	UFUNCTION(BlueprintCallable, DisplayName = "Register PlayFab")
 	void RegisterPlayFab(FString Username, FString Email, FString Password);
 
@@ -34,19 +35,13 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void LoginEmailAddress(FString Email, FString Password, bool bRemember = false);
 
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool IsValidUsername(FString Username);
-
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool IsValidEmail(FString Email);
-
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool IsValidPassword(FString Password);
+	UFUNCTION(BlueprintCallable)
+	void Logout();
 
 private:
 	bool bRememberMe;
 
-	FRegisterPlayFabUserRequest RegisterRequest;
+	PlayFab::ClientModels::FRegisterPlayFabUserRequest RegisterRequest;
 
 	UPROPERTY()
 	UPlayFabSaveLogin* SaveLogin;

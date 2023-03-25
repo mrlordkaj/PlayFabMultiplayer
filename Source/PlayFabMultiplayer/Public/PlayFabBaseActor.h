@@ -16,41 +16,43 @@ class PLAYFABMULTIPLAYER_API APlayFabBaseActor : public AActor
 	GENERATED_BODY()
 
 public:
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FGenericDelegate);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDelegatePlayFabGeneric);
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGenericMessage, FString, Message);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegatePlayFabMessage, FString, Message);
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDelegateOnPlayFabError, FString, Name, FString, Message, int, Code);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDelegatePlayFabError, FString, Name, FString, Message, int, Code);
 
 	APlayFabBaseActor();
 
+protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(BlueprintAssignable, DisplayName = "On PlayFab Error")
-	FDelegateOnPlayFabError OnPlayFabError;
+	FDelegatePlayFabError OnPlayFabError;
 
 protected:
 	PlayFabClientPtr ClientAPI;
 
-	PlayFab::FPlayFabErrorDelegate DefaultErrorDelegate;
+	PlayFab::FPlayFabErrorDelegate DefaultErrorCpp;
 
-	/* Get player's PlayFabId stored in game instance. */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Get PlayFabId")
-	FString GetPlayFabId();
+	/* Get PlayFabId stored in game instance. */
+	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Get Login PlayFabId")
+	FString GetLoginPlayFabId();
 
 	/* Get authentication context stored in game instance. */
-	FString GetEntityId();
+	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Get Login EntityId")
+	FString GetLoginEntityId();
 
-	/* Get player's entity stored in game instance. */
+	/* Get EntityId stored in game instance. */
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	UPlayFabJsonObject* GetEntityKey();
+	UPlayFabJsonObject* GetLoginEntityKey();
 
 	/* Get authentication context stored in game instance. */
-	TSharedPtr<UPlayFabAuthenticationContext> GetAuthenticationContextCpp();
+	TSharedPtr<UPlayFabAuthenticationContext> GetLoginContextCpp();
 
 	/* Get authentication context stored in game instance. */
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	UPlayFabAuthenticationContext* GetAuthenticationContext();
+	UPlayFabAuthenticationContext* GetLoginContext();
 
 	/* Default PlayFabError event. */
 	void PlayFabErrorCpp(const PlayFab::FPlayFabCppError& Error);

@@ -4,29 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "PlayFabCharacterItem.generated.h"
+#include "PlayFabMatchPlayerEntry.generated.h"
 
 /**
  * 
  */
-UCLASS()
-class PLAYFABMULTIPLAYER_API UPlayFabCharacterItem : public UObject
+UCLASS(BlueprintType)
+class PLAYFABMULTIPLAYER_API UPlayFabMatchPlayerEntry : public UObject
 {
 	GENERATED_BODY()
-	
-public:
-	UPROPERTY(BlueprintReadOnly)
-	FString ItemId;
 
+public:
 	UPROPERTY(BlueprintReadOnly)
 	FString DisplayName;
 
 	UPROPERTY(BlueprintReadOnly)
-	FString ImageURI;
+	FString AvatarUrl;
 
 	UPROPERTY(BlueprintReadOnly)
-	float Price;
-
-	UPROPERTY(BlueprintReadOnly)
-	bool bOwned;
+	FString Position;
 };

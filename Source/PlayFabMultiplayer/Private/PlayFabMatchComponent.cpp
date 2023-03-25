@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright (C) 2022 Thinh Pham.
 
 
 #include "PlayFabMatchComponent.h"
@@ -15,27 +15,6 @@ void UPlayFabMatchComponent::BeginPlay()
 	Super::BeginPlay();
 
 	MultiplayerAPI = IPlayFabModuleInterface::Get().GetMultiplayerAPI();
-
-	//TSharedPtr<FJsonObject> J = FJsonObjectConverter::UStructToJsonObject(UserAttributes2);
-	//FString Encode;
-	//TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&Encode);
-	//FJsonSerializer::Serialize(J.ToSharedRef(), Writer);
-	//UKismetSystemLibrary::PrintString(GetWorld(), Encode);
-
-	//TSharedPtr<FJsonObject> J = MakeShareable(new FJsonObject);
-	//J->SetStringField("DisplayName", "DCI Thinh");
-	//J->SetStringField("AvatarUrl", "https://google.com.vn");
-	//TArray<TSharedPtr<FJsonValue>> Latencies;
-	//for (TPair<EAzureRegion, float> R : RegionLatencies) {
-	//	TSharedPtr<FJsonObject> O = MakeShareable(new FJsonObject);
-	//	O->SetStringField(TEXT("Region"), UEnum::GetDisplayValueAsText(R.Key).ToString());
-	//	O->SetNumberField(TEXT("Latency"), R.Value);
-	//	Latencies.Add(MakeShareable(new FJsonValueObject(O)));
-	//}
-	//J->SetArrayField(TEXT("Latencies"), Latencies);
-	//FPlayFabUserAttributes A;
-	//FJsonObjectConverter::JsonObjectToUStruct(J.ToSharedRef(), &A);
-	//UKismetSystemLibrary::PrintString(GetWorld(), UEnum::GetDisplayValueAsText(A.Latencies[0].Region).ToString());
 }
 
 void UPlayFabMatchComponent::CreateTicket(FString QueueName)
@@ -47,7 +26,6 @@ void UPlayFabMatchComponent::CreateTicket(FString QueueName)
 	CreateTicketRequest.Creator.Attributes = MakeShareable(new FMatchmakingPlayerAttributes);
 	TSharedPtr<FJsonObject> J = FJsonObjectConverter::UStructToJsonObject(UserAttributes);
 	CreateTicketRequest.Creator.Attributes->DataObject = FJsonKeeper(J);
-	// player entity
 	CreateTicketRequest.Creator.Entity.Id = GetLoginEntityId();
 	CreateTicketRequest.Creator.Entity.Type = TEXT("title_player_account");
 	// TODO: members to match with
@@ -119,7 +97,7 @@ void UPlayFabMatchComponent::GetTicketSuccess(const PlayFab::MultiplayerModels::
 		R.AuthenticationContext = GetLoginContextCpp();
 		R.MatchId = Result.MatchId;
 		R.QueueName = Result.QueueName;
-		R.ReturnMemberAttributes = false;
+		R.ReturnMemberAttributes = true;
 		UE_LOG(LogPlayFabMultiplayer, Warning, TEXT("%s"), *R.toJSONString());
 		MultiplayerAPI->GetMatch(R,
 			UPlayFabMultiplayerAPI::FGetMatchDelegate::CreateUObject(this, &UPlayFabMatchComponent::GetMatchSuccess),
@@ -147,13 +125,19 @@ void UPlayFabMatchComponent::GetMatchSuccess(const PlayFab::MultiplayerModels::F
 	UE_LOG(LogPlayFabMultiplayer, Display, TEXT("%s"), *Result.toJSONString());
 	// find my team
 	FString Portal;
+	TArray<UPlayFabMatchPlayerEntry*> Players;
 	for (FMatchmakingPlayerWithTeamAssignment P : Result.Members)
 	{
 		if (P.Entity.Id == GetLoginEntityId()) {
 			Portal = P.TeamId;
 			UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Team %s"), *Portal));
-			break;
 		}
+		TSharedPtr<FJsonObject> F = P.Attributes->DataObject.GetJsonValue()->AsObject();
+		UPlayFabMatchPlayerEntry* Player = NewObject<UPlayFabMatchPlayerEntry>(this);
+		Player->DisplayName = F->GetStringField(TEXT("displayName"));
+		Player->AvatarUrl = F->GetStringField(TEXT("avatarUrl"));
+		Player->Position = P.TeamId;
+		Players.Add(Player);
 	}
 	// get server address (only available on playfab's mps)
 	FString Server;
@@ -162,5 +146,5 @@ void UPlayFabMatchComponent::GetMatchSuccess(const PlayFab::MultiplayerModels::F
 		Server = FString::Printf(TEXT("%s:%d"), *D->IPV4Address, D->Ports[0].Num);
 	}
 	// broadcast on blueprint side
-	OnMatchFound.Broadcast(Server, Portal);
+	OnMatchFound.Broadcast(Server, Portal, Players);
 }

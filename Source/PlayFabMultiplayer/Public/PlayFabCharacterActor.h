@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright (C) 2022 Thinh Pham.
 
 #pragma once
 
@@ -29,7 +29,7 @@ protected:
 
 public:
 	UPROPERTY(BlueprintAssignable)
-	FGenericDelegate OnGetCatalogCharacters;
+	FDelegatePlayFabGeneric OnGetCatalogCharacters;
 
 	UFUNCTION(BlueprintCallable)
 	void GetCatalogCharacters();

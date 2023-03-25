@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright (C) 2022 Thinh Pham.
 
 
 #include "PlayFabCharacterActor.h"
@@ -12,11 +12,11 @@ void APlayFabCharacterActor::GetCatalogCharacters()
 	Characters.Empty();
 	// call API
 	FGetCatalogItemsRequest Request;
-	Request.AuthenticationContext = GetAuthenticationContextCpp();
+	Request.AuthenticationContext = GetLoginContextCpp();
 	Request.CatalogVersion = CatalogVersion;
 	ClientAPI->GetCatalogItems(Request,
 		PlayFab::UPlayFabClientAPI::FGetCatalogItemsDelegate::CreateUObject(this, &APlayFabCharacterActor::OnGetCatalogCharactersSuccess),
-		DefaultErrorDelegate);
+		DefaultErrorCpp);
 }
 
 void APlayFabCharacterActor::OnGetCatalogCharactersSuccess(const FGetCatalogItemsResult& Result)
@@ -39,11 +39,11 @@ void APlayFabCharacterActor::OnGetCatalogCharactersSuccess(const FGetCatalogItem
 	}
 	// check owning status
 	FListUsersCharactersRequest Request;
-	Request.AuthenticationContext = GetAuthenticationContextCpp();
-	Request.PlayFabId = GetPlayFabId();
+	Request.AuthenticationContext = GetLoginContextCpp();
+	Request.PlayFabId = GetLoginPlayFabId();
 	ClientAPI->GetAllUsersCharacters(Request,
 		PlayFab::UPlayFabClientAPI::FGetAllUsersCharactersDelegate::CreateUObject(this, &APlayFabCharacterActor::OnGetPlayerCharactersSucess),
-		DefaultErrorDelegate);
+		DefaultErrorCpp);
 }
 
 void APlayFabCharacterActor::OnGetPlayerCharactersSucess(const FListUsersCharactersResult& Result)

@@ -24,7 +24,7 @@ APlayerController* ALobbyGameMode::Login(UPlayer* NewPlayer, ENetRole InRemoteRo
 	APlayerController* Controller = Super::Login(NewPlayer, InRemoteRole, Portal, Options, UniqueId, ErrorMessage);
 	if (TargetMap.IsEmpty())
 	{
-		FString ClientTargetMap = UGameplayStatics::ParseOption(Options, "Map");
+		FString ClientTargetMap = UGameplayStatics::ParseOption(Options, "TargetMap");
 		if (!ClientTargetMap.IsEmpty())
 		{
 			TargetMap = ClientTargetMap;

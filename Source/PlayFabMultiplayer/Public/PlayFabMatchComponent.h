@@ -1,11 +1,13 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright (C) 2022 Thinh Pham.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Core/PlayFabMultiplayerAPI.h"
+#include "PlayFabTypes.h"
 #include "PlayFabEnums.h"
 #include "PlayFabBaseComponent.h"
+#include "PlayFabMatchPlayerEntry.h"
 #include "PlayFabMatchComponent.generated.h"
 
 /**
@@ -16,19 +18,13 @@ class PLAYFABMULTIPLAYER_API UPlayFabMatchComponent : public UPlayFabBaseCompone
 {
 	GENERATED_BODY()
 	
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDelegateMatchFound, FString, Server, FString, Portal);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDelegateMatchFound, FString, Server, FString, Portal, const TArray<UPlayFabMatchPlayerEntry*>&, Players);
 
 public:
 	virtual void BeginPlay() override;
 
 protected:
 	PlayFabMultiplayerPtr MultiplayerAPI;
-
-	UPROPERTY(EditAnywhere, Category = "Matchmaking Settings")
-	TMap<EAzureRegion, float> RegionLatencies;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Matchmaking Settings")
-	FPlayFabUserAttributes UserAttributes;
 
 	UPROPERTY(EditAnywhere, Category = "Matchmaking Settings", meta = (UIMin = "30", UIMax = "180", ClampMin = "30", ClampMax = "180"))
 	int TicketTimeout = 60;
@@ -49,7 +45,10 @@ public:
 
 	/* Broadcast event on ticket cancel. Message is the reason. */
 	UPROPERTY(BlueprintAssignable)
-	FDelegateMessage OnTicketCanceled;
+	FDelegatePlayFabMessage OnTicketCanceled;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Matchmaking Settings")
+	FPlayFabUserAttributes UserAttributes;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Matchmaking Result")
 	FString PawnClass;
