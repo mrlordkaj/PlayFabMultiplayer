@@ -63,6 +63,7 @@ public:
 	void CancelTicket();
 
 private:
+	/* Refreshs matchmaking ticket status. */
 	void RefreshTicket();
 
 	/* The create matchmaking ticket request. */
