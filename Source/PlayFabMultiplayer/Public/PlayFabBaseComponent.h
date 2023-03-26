@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Core/PlayFabClientAPI.h"
+#include "PlayFabMultiplayer.h"
 #include "PlayFab.h"
 #include "PlayFabBaseModel.h"
 #include "PlayFabAuthenticationContext.h"
@@ -16,16 +17,9 @@ class PLAYFABMULTIPLAYER_API UPlayFabBaseComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDelegatePlayFabGeneric);
-
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegatePlayFabMessage, FString, Message);
-
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDelegatePlayFabError, FString, Name, FString, Message, int, Code);
-
+protected:
 	UPlayFabBaseComponent();
 
-protected:
 	virtual void BeginPlay() override;
 
 protected:
@@ -33,8 +27,8 @@ protected:
 
 	PlayFab::FPlayFabErrorDelegate DefaultErrorCpp;
 
-	UPROPERTY(BlueprintAssignable, DisplayName = "On PlayFab Error")
-	FDelegatePlayFabError OnPlayFabError;
+	UPROPERTY(BlueprintAssignable)
+	UPlayFabMultiplayer::FPlayFabErrorDelegate OnPlayFabError;
 
 	/* Gets PlayFabId stored in game instance. */
 	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Get Login PlayFabId")
@@ -44,16 +38,8 @@ protected:
 	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Get Login EntityId")
 	FString GetLoginEntityId();
 
-	/* Generates EntityKey for blueprint usage. */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Get Login EntityKey")
-	UPlayFabJsonObject* GetLoginEntityKey();
-
 	/* Gets authentication context stored in game instance. */
 	TSharedPtr<UPlayFabAuthenticationContext> GetLoginContextCpp();
-
-	/* Gets authentication context stored in game instance. */
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	UPlayFabAuthenticationContext* GetLoginContext();
 
 	/* Default PlayFabError event. */
 	void PlayFabErrorCpp(const PlayFab::FPlayFabCppError& Error);
@@ -61,9 +47,4 @@ protected:
 	/* Default PlayFabError event. */
 	UFUNCTION(BlueprintCallable)
 	void PlayFapError(FPlayFabError Error, UObject* CustomData);
-
-public:
-	/* Checks current login status. */
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool HasLogin();
 };

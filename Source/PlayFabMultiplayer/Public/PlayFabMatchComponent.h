@@ -41,11 +41,11 @@ public:
 	FDelegateMatchFound OnMatchFound;
 
 	UPROPERTY(BlueprintAssignable)
-	FDelegatePlayFabGeneric OnTicketCreated;
+	UPlayFabMultiplayer::FPlayFabGenericDelegate OnTicketCreated;
 
 	/* Broadcast event on ticket cancel. Message is the reason. */
 	UPROPERTY(BlueprintAssignable)
-	FDelegatePlayFabMessage OnTicketCanceled;
+	UPlayFabMultiplayer::FPlayFabMessageDelegate OnTicketCanceled;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Matchmaking Settings")
 	FPlayFabUserAttributes UserAttributes;

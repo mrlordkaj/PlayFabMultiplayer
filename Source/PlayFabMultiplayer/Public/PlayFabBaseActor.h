@@ -8,6 +8,7 @@
 #include "GameFramework/Actor.h"
 #include "PlayFab.h"
 #include "Core/PlayFabClientAPI.h"
+#include "PlayFabMultiplayer.h"
 #include "PlayFabBaseActor.generated.h"
 
 UCLASS(DisplayName="PlayFab Base Actor")
@@ -15,20 +16,13 @@ class PLAYFABMULTIPLAYER_API APlayFabBaseActor : public AActor
 {
 	GENERATED_BODY()
 
-public:
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDelegatePlayFabGeneric);
-
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegatePlayFabMessage, FString, Message);
-
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDelegatePlayFabError, FString, Name, FString, Message, int, Code);
-
+protected:
 	APlayFabBaseActor();
 
-protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(BlueprintAssignable, DisplayName = "On PlayFab Error")
-	FDelegatePlayFabError OnPlayFabError;
+	UPROPERTY(BlueprintAssignable)
+	UPlayFabMultiplayer::FPlayFabErrorDelegate OnPlayFabError;
 
 protected:
 	PlayFabClientPtr ClientAPI;
@@ -43,16 +37,8 @@ protected:
 	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Get Login EntityId")
 	FString GetLoginEntityId();
 
-	/* Get EntityId stored in game instance. */
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	UPlayFabJsonObject* GetLoginEntityKey();
-
 	/* Get authentication context stored in game instance. */
 	TSharedPtr<UPlayFabAuthenticationContext> GetLoginContextCpp();
-
-	/* Get authentication context stored in game instance. */
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	UPlayFabAuthenticationContext* GetLoginContext();
 
 	/* Default PlayFabError event. */
 	void PlayFabErrorCpp(const PlayFab::FPlayFabCppError& Error);
@@ -60,9 +46,4 @@ protected:
 	/* Default PlayFabError event. */
 	UFUNCTION(BlueprintCallable)
 	void PlayFapError(FPlayFabError Error, UObject* CustomData);
-
-public:
-	/* Checks current login status. */
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool HasLogin();
 };

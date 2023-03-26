@@ -31,43 +31,24 @@ FString UPlayFabBaseComponent::GetLoginEntityId()
 	return GI->EntityId;
 }
 
-UPlayFabJsonObject* UPlayFabBaseComponent::GetLoginEntityKey()
-{
-	UWorld* W = GetWorld();
-	UPlayFabJsonObject* D = UPlayFabJsonObject::ConstructJsonObject(W);
-	UPlayFabGameInstance* GI = W->GetGameInstance<UPlayFabGameInstance>();
-	if (!GI->EntityId.IsEmpty()) {
-		D->SetStringField(TEXT("Id"), GI->EntityId);
-		D->SetStringField(TEXT("Type"), TEXT("title_player_account"));
-	}
-	return D;
-}
-
 TSharedPtr<UPlayFabAuthenticationContext> UPlayFabBaseComponent::GetLoginContextCpp()
 {
 	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
 	return GI->AuthenticationContext;
 }
 
-UPlayFabAuthenticationContext* UPlayFabBaseComponent::GetLoginContext()
-{
-	return GetLoginContextCpp().Get();
-}
-
 void UPlayFabBaseComponent::PlayFabErrorCpp(const PlayFab::FPlayFabCppError& Error)
 {
-	UE_LOG(LogPlayFabMultiplayer, Error, TEXT("%s"), *Error.GenerateErrorReport());
-	OnPlayFabError.Broadcast(Error.ErrorName, Error.ErrorMessage, Error.ErrorCode);
+	FPlayFabError E;
+	E.ErrorCode = Error.ErrorCode;
+	E.ErrorMessage = Error.ErrorMessage;
+	E.ErrorName = Error.ErrorName;
+	E.ErrorDetails = Error.GenerateErrorReport();
+	PlayFapError(E, nullptr);
 }
 
 void UPlayFabBaseComponent::PlayFapError(FPlayFabError Error, UObject* CustomData)
 {
 	UE_LOG(LogPlayFabMultiplayer, Error, TEXT("%s"), *Error.ErrorDetails);
-	OnPlayFabError.Broadcast(Error.ErrorName, Error.ErrorMessage, Error.ErrorCode);
-}
-
-bool UPlayFabBaseComponent::HasLogin()
-{
-	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
-	return GI->AuthenticationContext.IsValid();
+	OnPlayFabError.Broadcast(Error);
 }

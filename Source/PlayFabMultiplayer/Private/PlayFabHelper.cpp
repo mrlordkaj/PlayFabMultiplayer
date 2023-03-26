@@ -2,6 +2,9 @@
 
 
 #include "PlayFabHelper.h"
+#include "PlayFabGameInstance.h"
+
+using namespace PlayFab::ClientModels;
 
 bool UPlayFabHelper::IsValidUsername(FString Username)
 {
@@ -20,4 +23,35 @@ bool UPlayFabHelper::IsValidEmail(FString Email)
 bool UPlayFabHelper::IsValidPassword(FString Password)
 {
 	return Password.Len() >= 3;
+}
+
+UPlayFabAuthenticationContext* UPlayFabHelper::GetLoginContext(UObject* WorldContextObject)
+{
+	UPlayFabGameInstance* GI = WorldContextObject->GetWorld()->GetGameInstance<UPlayFabGameInstance>();
+	return GI->AuthenticationContext.Get();
+}
+
+UPlayFabJsonObject* UPlayFabHelper::GetLoginEntityKey(UObject* WorldContextObject)
+{
+	UPlayFabJsonObject* D = UPlayFabJsonObject::ConstructJsonObject(WorldContextObject);
+	UPlayFabGameInstance* GI = WorldContextObject->GetWorld()->GetGameInstance<UPlayFabGameInstance>();
+	if (!GI->EntityId.IsEmpty()) {
+		D->SetStringField(TEXT("Id"), GI->EntityId);
+		D->SetStringField(TEXT("Type"), TEXT("title_player_account"));
+	}
+	return D;
+}
+
+bool UPlayFabHelper::HasLogin(UObject* WorldContextObject)
+{
+	UPlayFabGameInstance* GI = WorldContextObject->GetWorld()->GetGameInstance<UPlayFabGameInstance>();
+	return GI->AuthenticationContext.IsValid();
+}
+
+void UPlayFabHelper::ReadVirtualCurrency(const FGetPlayerCombinedInfoResult& Result, FString Currency, int& Value)
+{
+	if (Result.InfoResultPayload->UserVirtualCurrency.Contains(Currency))
+	{
+		Value = *Result.InfoResultPayload->UserVirtualCurrency.Find(Currency);
+	}
 }

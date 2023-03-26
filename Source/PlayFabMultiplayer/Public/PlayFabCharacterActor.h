@@ -29,7 +29,7 @@ protected:
 
 public:
 	UPROPERTY(BlueprintAssignable)
-	FDelegatePlayFabGeneric OnGetCatalogCharacters;
+	UPlayFabMultiplayer::FPlayFabGenericDelegate OnGetCatalogCharacters;
 
 	UFUNCTION(BlueprintCallable)
 	void GetCatalogCharacters();

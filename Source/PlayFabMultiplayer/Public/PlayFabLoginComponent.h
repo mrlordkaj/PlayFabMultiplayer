@@ -20,7 +20,7 @@ protected:
 
 public:
 	UPROPERTY(BlueprintAssignable)
-	FDelegatePlayFabGeneric OnLoginSuccess;
+	UPlayFabMultiplayer::FPlayFabGenericDelegate OnLoginSuccess;
 
 protected:
 	UFUNCTION(BlueprintCallable, DisplayName = "Register PlayFab")

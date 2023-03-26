@@ -15,9 +15,9 @@ APlayFabBaseActor::APlayFabBaseActor()
 void APlayFabBaseActor::BeginPlay()
 {
 	Super::BeginPlay();
-	// create client api
+	
+	// create common stuffs
 	ClientAPI = IPlayFabModuleInterface::Get().GetClientAPI();
-	// create default error delegate
 	DefaultErrorCpp = PlayFab::FPlayFabErrorDelegate::CreateUObject(this, &APlayFabBaseActor::PlayFabErrorCpp);
 }
 
@@ -27,26 +27,10 @@ FString APlayFabBaseActor::GetLoginEntityId()
 	return GI->EntityId;
 }
 
-UPlayFabJsonObject* APlayFabBaseActor::GetLoginEntityKey()
-{
-	UPlayFabJsonObject* D = UPlayFabJsonObject::ConstructJsonObject(GetWorld());
-	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
-	if (!GI->EntityId.IsEmpty()) {
-		D->SetStringField(TEXT("Id"), GI->EntityId);
-		D->SetStringField(TEXT("Type"), TEXT("title_player_account"));
-	}
-	return D;
-}
-
 TSharedPtr<UPlayFabAuthenticationContext> APlayFabBaseActor::GetLoginContextCpp()
 {
 	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
 	return GI->AuthenticationContext;
-}
-
-UPlayFabAuthenticationContext* APlayFabBaseActor::GetLoginContext()
-{
-	return GetLoginContextCpp().Get();
 }
 
 FString APlayFabBaseActor::GetLoginPlayFabId()
@@ -57,19 +41,16 @@ FString APlayFabBaseActor::GetLoginPlayFabId()
 
 void APlayFabBaseActor::PlayFabErrorCpp(const PlayFab::FPlayFabCppError& Error)
 {
-	UE_LOG(LogPlayFabMultiplayer, Error, TEXT("%s"), *Error.GenerateErrorReport());
-	OnPlayFabError.Broadcast(Error.ErrorName, Error.ErrorMessage, Error.ErrorCode);
+	FPlayFabError E;
+	E.ErrorCode = Error.ErrorCode;
+	E.ErrorMessage = Error.ErrorMessage;
+	E.ErrorName = Error.ErrorName;
+	E.ErrorDetails = Error.GenerateErrorReport();
+	PlayFapError(E, nullptr);
 }
 
 void APlayFabBaseActor::PlayFapError(FPlayFabError Error, UObject* CustomData)
 {
 	UE_LOG(LogPlayFabMultiplayer, Error, TEXT("%s"), *Error.ErrorDetails);
-	OnPlayFabError.Broadcast(Error.ErrorName, Error.ErrorMessage, Error.ErrorCode);
+	OnPlayFabError.Broadcast(Error);
 }
-
-bool APlayFabBaseActor::HasLogin()
-{
-	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
-	return GI->AuthenticationContext.IsValid();
-}
-
