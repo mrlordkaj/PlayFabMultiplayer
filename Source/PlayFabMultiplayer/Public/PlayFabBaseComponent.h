@@ -17,18 +17,18 @@ class PLAYFABMULTIPLAYER_API UPlayFabBaseComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+public:
+	UPROPERTY(BlueprintAssignable)
+	UPlayFabMultiplayer::FPlayFabErrorDelegate OnPlayFabError;
+
 protected:
 	UPlayFabBaseComponent();
 
 	virtual void BeginPlay() override;
 
-protected:
 	PlayFabClientPtr ClientAPI;
 
 	PlayFab::FPlayFabErrorDelegate DefaultErrorCpp;
-
-	UPROPERTY(BlueprintAssignable)
-	UPlayFabMultiplayer::FPlayFabErrorDelegate OnPlayFabError;
 
 	/* Gets PlayFabId stored in game instance. */
 	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Get Login PlayFabId")
@@ -39,7 +39,7 @@ protected:
 	FString GetLoginEntityId();
 
 	/* Gets authentication context stored in game instance. */
-	TSharedPtr<UPlayFabAuthenticationContext> GetLoginContextCpp();
+	TSharedPtr<UPlayFabAuthenticationContext> GetLoginContext();
 
 	/* Default PlayFabError event. */
 	void PlayFabErrorCpp(const PlayFab::FPlayFabCppError& Error);

@@ -42,6 +42,7 @@ enum class EPlayFabRegion : uint8
 	CentralIndia UMETA(DisplayName = "CentralIndia"),
 	UaeNorth UMETA(DisplayName = "UaeNorth"),
 	UkSouth UMETA(DisplayName = "UkSouth"),
+	Unavailable,
 };
 
 USTRUCT(BlueprintType)
@@ -50,10 +51,10 @@ struct FPlayFabLatency
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EPlayFabRegion Region;
+	EPlayFabRegion Region = EPlayFabRegion::Unavailable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Latency;
+	float Latency = 0;
 };
 
 USTRUCT(BlueprintType)
@@ -81,69 +82,69 @@ struct FPlayerProfileViewConstraintsTest
 
 	/* Whether to show player's avatar URL. */
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, SimpleDisplay)
-	bool ShowAvatarUrl;
+	bool ShowAvatarUrl = false;
 
 	/* Whether to show the banned until time. */
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, AdvancedDisplay)
-	bool ShowBannedUntil;
+	bool ShowBannedUntil = false;
 
 	/* Whether to show campaign attributions. */
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, AdvancedDisplay)
-	bool ShowCampaignAttributions;
+	bool ShowCampaignAttributions = false;
 
 	/* Whether to show contact email addresses. */
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, AdvancedDisplay)
-	bool ShowContactEmailAddresses;
+	bool ShowContactEmailAddresses = false;
 
 	/* Whether to show the created date. */
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, AdvancedDisplay)
-	bool ShowCreated;
+	bool ShowCreated = false;
 
 	/* Whether to show the display name. */
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, SimpleDisplay)
-	bool ShowDisplayName;
+	bool ShowDisplayName = false;
 
 	/* Whether to show player's experiment variants. */
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, AdvancedDisplay)
-	bool ShowExperimentVariants;
+	bool ShowExperimentVariants = false;
 
 	/* Whether to show the last login time. */
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, AdvancedDisplay)
-	bool ShowLastLogin;
+	bool ShowLastLogin = false;
 
 	/* Whether to show the linked accounts. */
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, AdvancedDisplay)
-	bool ShowLinkedAccounts;
+	bool ShowLinkedAccounts = false;
 
 	/* Whether to show player's locations. */
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, AdvancedDisplay)
-	bool ShowLocations;
+	bool ShowLocations = false;
 
 	/* Whether to show player's membership information. */
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, AdvancedDisplay)
-	bool ShowMemberships;
+	bool ShowMemberships = false;
 
 	/* Whether to show origination. */
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, AdvancedDisplay)
-	bool ShowOrigination;
+	bool ShowOrigination = false;
 
 	/* Whether to show push notification registrations. */
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, AdvancedDisplay)
-	bool ShowPushNotificationRegistrations;
+	bool ShowPushNotificationRegistrations = false;
 
 	/* Reserved for future development. */
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, AdvancedDisplay)
-	bool ShowStatistics;
+	bool ShowStatistics = false;
 
 	/* Whether to show tags. */
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, AdvancedDisplay)
-	bool ShowTags;
+	bool ShowTags = false;
 
 	/* Whether to show the total value to date in usd. */
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, AdvancedDisplay)
-	bool ShowTotalValueToDateInUsd;
+	bool ShowTotalValueToDateInUsd = false;
 
 	/* Whether to show the values to date. */
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, AdvancedDisplay)
-	bool ShowValuesToDate;
+	bool ShowValuesToDate = false;
 };

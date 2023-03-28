@@ -27,7 +27,7 @@ FString APlayFabBaseActor::GetLoginEntityId()
 	return GI->EntityId;
 }
 
-TSharedPtr<UPlayFabAuthenticationContext> APlayFabBaseActor::GetLoginContextCpp()
+TSharedPtr<UPlayFabAuthenticationContext> APlayFabBaseActor::GetLoginContext()
 {
 	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
 	return GI->AuthenticationContext;

@@ -22,7 +22,7 @@ void UPlayFabMatchComponent::CreateTicket(FString QueueName)
 	// make request
 	CreateTicketRequest.GiveUpAfterSeconds = TicketTimeout;
 	CreateTicketRequest.QueueName = QueueName;
-	CreateTicketRequest.AuthenticationContext = GetLoginContextCpp();
+	CreateTicketRequest.AuthenticationContext = GetLoginContext();
 	CreateTicketRequest.Creator.Attributes = MakeShareable(new FMatchmakingPlayerAttributes);
 	TSharedPtr<FJsonObject> J = FJsonObjectConverter::UStructToJsonObject(UserAttributes);
 	CreateTicketRequest.Creator.Attributes->DataObject = FJsonKeeper(J);
@@ -40,7 +40,7 @@ void UPlayFabMatchComponent::CreateTicketSuccess(const PlayFab::MultiplayerModel
 {
 	UE_LOG(LogPlayFabMultiplayer, Display, TEXT("%s"), *Result.toJSONString());
 	// create get ticket request
-	GetTicketRequest.AuthenticationContext = GetLoginContextCpp();
+	GetTicketRequest.AuthenticationContext = GetLoginContext();
 	GetTicketRequest.QueueName = CreateTicketRequest.QueueName;
 	GetTicketRequest.TicketId = Result.TicketId;
 	// start refreshing ticket status by the time in settings
@@ -57,7 +57,7 @@ void UPlayFabMatchComponent::CancelTicket()
 	{
 		// call cancel api
 		FCancelMatchmakingTicketRequest R;
-		R.AuthenticationContext = GetLoginContextCpp();
+		R.AuthenticationContext = GetLoginContext();
 		R.QueueName = GetTicketRequest.QueueName;
 		R.TicketId = GetTicketRequest.TicketId;
 		UE_LOG(LogPlayFabMultiplayer, Warning, TEXT("%s"), *R.toJSONString());
@@ -94,7 +94,7 @@ void UPlayFabMatchComponent::GetTicketSuccess(const PlayFab::MultiplayerModels::
 		GetWorld()->GetTimerManager().ClearTimer(RefreshTicketTimer);
 		// call get match api
 		FGetMatchRequest R;
-		R.AuthenticationContext = GetLoginContextCpp();
+		R.AuthenticationContext = GetLoginContext();
 		R.MatchId = Result.MatchId;
 		R.QueueName = Result.QueueName;
 		R.ReturnMemberAttributes = true;

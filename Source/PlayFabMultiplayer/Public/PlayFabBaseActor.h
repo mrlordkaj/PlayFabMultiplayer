@@ -38,7 +38,7 @@ protected:
 	FString GetLoginEntityId();
 
 	/* Get authentication context stored in game instance. */
-	TSharedPtr<UPlayFabAuthenticationContext> GetLoginContextCpp();
+	TSharedPtr<UPlayFabAuthenticationContext> GetLoginContext();
 
 	/* Default PlayFabError event. */
 	void PlayFabErrorCpp(const PlayFab::FPlayFabCppError& Error);

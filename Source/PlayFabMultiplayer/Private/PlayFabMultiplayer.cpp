@@ -1,4 +1,4 @@
-// Copyright (C) 2022 Thinh Pham.
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "PlayFabMultiplayer.h"
 
@@ -17,6 +17,6 @@ void FPlayFabMultiplayerModule::ShutdownModule()
 
 #undef LOCTEXT_NAMESPACE
 
-IMPLEMENT_MODULE(FPlayFabMultiplayerModule, LogPlayFabMultiplayer)
+IMPLEMENT_MODULE(FPlayFabMultiplayerModule, PlayFabMultiplayer)
 
 DEFINE_LOG_CATEGORY(LogPlayFabMultiplayer);

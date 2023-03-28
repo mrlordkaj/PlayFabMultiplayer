@@ -1,4 +1,4 @@
-// Copyright (C) 2022 Thinh Pham.
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 using UnrealBuildTool;
 

@@ -5,7 +5,10 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Core/PlayFabClientAPI.h"
+#include "JsonObjectConverter.h"
 #include "PlayFabHelper.generated.h"
+
+using namespace PlayFab::ClientModels;
 
 /**
  * 
@@ -37,10 +40,10 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (WorldContext = "WorldContextObject"))
 	static bool HasLogin(UObject* WorldContextObject);
 
-	static void ReadVirtualCurrency(const PlayFab::ClientModels::FGetPlayerCombinedInfoResult& Result, FString Currency, int& Value);
+	static void ReadVirtualCurrency(const FGetPlayerCombinedInfoResult& Result, FString Currency, int& Value);
 
 	template<typename OutStructType>
-	static void ReadUserData(const PlayFab::ClientModels::FGetPlayerCombinedInfoResult& Result, FString Key, OutStructType* OutStruct)
+	static void ReadUserData(const FGetPlayerCombinedInfoResult& Result, FString Key, OutStructType* OutStruct)
 	{
 		if (Result.InfoResultPayload->UserData.Contains(Key))
 		{
