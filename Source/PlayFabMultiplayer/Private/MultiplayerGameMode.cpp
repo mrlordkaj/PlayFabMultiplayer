@@ -25,8 +25,8 @@ APlayerController* AMultiplayerGameMode::Login(UPlayer* NewPlayer, ENetRole InRe
 	if (!ErrorMessage.IsEmpty()) {
 		return nullptr;
 	}
-	APlayerController* Controller = Super::Login(NewPlayer, InRemoteRole, Portal, Options, UniqueId, ErrorMessage);
-	if (AMultiplayerController* MC = Cast<AMultiplayerController>(Controller))
+	APlayerController* PC = Super::Login(NewPlayer, InRemoteRole, Portal, Options, UniqueId, ErrorMessage);
+	if (AMultiplayerController* MC = Cast<AMultiplayerController>(PC))
 	{
 		MC->PlayFabId = UGameplayStatics::ParseOption(Options, "PlayFabId");
 		MC->PawnClass = UGameplayStatics::ParseOption(Options, "PawnClass");
@@ -34,7 +34,7 @@ APlayerController* AMultiplayerGameMode::Login(UPlayer* NewPlayer, ENetRole InRe
 		ConnectedPlayers.AddUnique(MC);
 		UpdateConnectedPlayers();
 	}
-	return Controller;
+	return PC;
 }
 
 void AMultiplayerGameMode::Logout(AController* ExitingPlayer)
