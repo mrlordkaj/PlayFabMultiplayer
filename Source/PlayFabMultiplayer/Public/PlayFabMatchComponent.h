@@ -26,8 +26,8 @@ public:
 protected:
 	PlayFabMultiplayerPtr MultiplayerAPI;
 
-	UPROPERTY(EditAnywhere, Category = "Matchmaking Settings", meta = (UIMin = "30", UIMax = "180", ClampMin = "30", ClampMax = "180"))
-	int TicketTimeout = 60;
+	UPROPERTY(EditAnywhere, Category = "Matchmaking Settings", meta = (UIMin = "60", UIMax = "300", ClampMin = "60", ClampMax = "300"))
+	int TicketTimeout = 120;
 
 	UPROPERTY(EditAnywhere, Category = "Matchmaking Settings", meta = (UIMin = "7", UIMax = "10", ClampMin = "7", ClampMax = "10"))
 	float RefreshTicketPeriod = 7;
@@ -50,11 +50,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Matchmaking Settings")
 	FPlayFabUserAttributes UserAttributes;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Matchmaking Result")
+	UPROPERTY(BlueprintReadWrite)
 	FString PawnClass;
-
-	UPROPERTY(BlueprintReadWrite, Category = "Matchmaking Result")
-	FString TargetMap;
 
 	UFUNCTION(BlueprintCallable)
 	void CreateTicket(FString QueueName);
@@ -63,6 +60,8 @@ public:
 	void CancelTicket();
 
 private:
+	//int AverageQueueTime;
+
 	/* Refreshs matchmaking ticket status. */
 	void RefreshTicket();
 
@@ -74,6 +73,9 @@ private:
 
 	/* Timer for refresh ticket status. */
 	FTimerHandle RefreshTicketTimer;
+
+	///* Callback on create matchmaking ticket success. */
+	//void GetQueueStatisticsSuccess(const PlayFab::MultiplayerModels::FGetQueueStatisticsResult& Result);
 
 	/* Callback on create matchmaking ticket success. */
 	void CreateTicketSuccess(const PlayFab::MultiplayerModels::FCreateMatchmakingTicketResult& Result);

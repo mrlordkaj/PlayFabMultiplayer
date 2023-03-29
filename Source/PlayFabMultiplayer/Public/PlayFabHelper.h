@@ -42,14 +42,26 @@ public:
 
 	static void ReadVirtualCurrency(const FGetPlayerCombinedInfoResult& Result, FString Currency, int& Value);
 
+	static void ReadUserDataString(const TMap<FString, FUserDataRecord>& UserData, FString Key, FString& Value);
+
+	static void ReadUserDataAsName(const TMap<FString, FUserDataRecord>& UserData, FString Key, FName& Name);
+
 	template<typename OutStructType>
-	static void ReadUserData(const FGetPlayerCombinedInfoResult& Result, FString Key, OutStructType* OutStruct)
+	static void ReadUserDataObject(TMap<FString, FUserDataRecord> UserData, FString Key, OutStructType* OutStruct)
 	{
-		if (Result.InfoResultPayload->UserData.Contains(Key))
+		if (UserData.Contains(Key))
 		{
-			FUserDataRecord D = *Result.InfoResultPayload->UserData.Find(Key);
+			FUserDataRecord D = *UserData.Find(Key);
 			FJsonObjectConverter::JsonObjectStringToUStruct(D.Value, OutStruct);
 		}
+	}
+
+	template<typename InStructType>
+	static FString EncodeJson(const InStructType& InStruct)
+	{
+		FString E;
+		FJsonObjectConverter::UStructToJsonObjectString(InStructType::StaticStruct(), &InStruct, E, 0, 0, 0, nullptr, false);
+		return E;
 	}
 };
 

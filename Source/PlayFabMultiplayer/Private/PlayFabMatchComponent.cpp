@@ -19,7 +19,7 @@ void UPlayFabMatchComponent::BeginPlay()
 
 void UPlayFabMatchComponent::CreateTicket(FString QueueName)
 {
-	// make request
+	// create ticket
 	CreateTicketRequest.GiveUpAfterSeconds = TicketTimeout;
 	CreateTicketRequest.QueueName = QueueName;
 	CreateTicketRequest.AuthenticationContext = GetLoginContext();
@@ -29,16 +29,24 @@ void UPlayFabMatchComponent::CreateTicket(FString QueueName)
 	CreateTicketRequest.Creator.Entity.Id = GetLoginEntityId();
 	CreateTicketRequest.Creator.Entity.Type = TEXT("title_player_account");
 	// TODO: members to match with
-	// call api
-	UE_LOG(LogPlayFabMultiplayer, Warning, TEXT("%s"), *CreateTicketRequest.toJSONString());
+	UE_LOG(LogPlayFabMultiplayer, Warning, TEXT("CreateTicket: %s"), *CreateTicketRequest.toJSONString());
 	MultiplayerAPI->CreateMatchmakingTicket(CreateTicketRequest,
 		UPlayFabMultiplayerAPI::FCreateMatchmakingTicketDelegate::CreateUObject(this, &UPlayFabMatchComponent::CreateTicketSuccess),
 		DefaultErrorCpp);
+
+	//// get queue statistics
+	//FGetQueueStatisticsRequest R;
+	//R.AuthenticationContext = GetLoginContext();
+	//R.QueueName = QueueName;
+	//UE_LOG(LogPlayFabMultiplayer, Warning, TEXT("GetQueueStatistics: %s"), *R.toJSONString());
+	//MultiplayerAPI->GetQueueStatistics(R,
+	//	UPlayFabMultiplayerAPI::FGetQueueStatisticsDelegate::CreateUObject(this, &UPlayFabMatchComponent::GetQueueStatisticsSuccess),
+	//	DefaultErrorCpp);
 }
 
-void UPlayFabMatchComponent::CreateTicketSuccess(const PlayFab::MultiplayerModels::FCreateMatchmakingTicketResult& Result)
+void UPlayFabMatchComponent::CreateTicketSuccess(const FCreateMatchmakingTicketResult& Result)
 {
-	UE_LOG(LogPlayFabMultiplayer, Display, TEXT("%s"), *Result.toJSONString());
+	UE_LOG(LogPlayFabMultiplayer, Display, TEXT("CreateTicket: %s"), *Result.toJSONString());
 	// create get ticket request
 	GetTicketRequest.AuthenticationContext = GetLoginContext();
 	GetTicketRequest.QueueName = CreateTicketRequest.QueueName;
@@ -51,24 +59,32 @@ void UPlayFabMatchComponent::CreateTicketSuccess(const PlayFab::MultiplayerModel
 	OnTicketCreated.Broadcast();
 }
 
+//void UPlayFabMatchComponent::GetQueueStatisticsSuccess(const FGetQueueStatisticsResult& Result)
+//{
+//	UE_LOG(LogPlayFabMultiplayer, Display, TEXT("GetQueueStatistics: %s"), *Result.toJSONString());
+//	if (Result.TimeToMatchStatisticsInSeconds.IsValid()) {
+//		AverageQueueTime = Result.TimeToMatchStatisticsInSeconds->Average;
+//	}
+//}
+
 void UPlayFabMatchComponent::CancelTicket()
 {
 	if (!GetTicketRequest.TicketId.IsEmpty())
 	{
-		// call cancel api
 		FCancelMatchmakingTicketRequest R;
 		R.AuthenticationContext = GetLoginContext();
 		R.QueueName = GetTicketRequest.QueueName;
 		R.TicketId = GetTicketRequest.TicketId;
-		UE_LOG(LogPlayFabMultiplayer, Warning, TEXT("%s"), *R.toJSONString());
+		UE_LOG(LogPlayFabMultiplayer, Warning, TEXT("CancelMatchmakingTicket: %s"), *R.toJSONString());
 		MultiplayerAPI->CancelMatchmakingTicket(R,
 			UPlayFabMultiplayerAPI::FCancelMatchmakingTicketDelegate::CreateUObject(this, &UPlayFabMatchComponent::CancelTicketSuccess),
 			DefaultErrorCpp);
 	}
 }
 
-void UPlayFabMatchComponent::CancelTicketSuccess(const PlayFab::MultiplayerModels::FCancelMatchmakingTicketResult& Result)
+void UPlayFabMatchComponent::CancelTicketSuccess(const FCancelMatchmakingTicketResult& Result)
 {
+	UE_LOG(LogPlayFabMultiplayer, Display, TEXT("CancelMatchmakingTicket: %s"), *GetTicketRequest.toJSONString());
 	// clear ticket info
 	GetTicketRequest.TicketId = TEXT("");
 	// stop refresh ticket
@@ -79,15 +95,15 @@ void UPlayFabMatchComponent::CancelTicketSuccess(const PlayFab::MultiplayerModel
 
 void UPlayFabMatchComponent::RefreshTicket()
 {
-	UE_LOG(LogPlayFabMultiplayer, Warning, TEXT("%s"), *GetTicketRequest.toJSONString());
+	UE_LOG(LogPlayFabMultiplayer, Warning, TEXT("GetMatchmakingTicket: %s"), *GetTicketRequest.toJSONString());
 	MultiplayerAPI->GetMatchmakingTicket(GetTicketRequest,
 		UPlayFabMultiplayerAPI::FGetMatchmakingTicketDelegate::CreateUObject(this, &UPlayFabMatchComponent::GetTicketSuccess),
 		DefaultErrorCpp);
 }
 
-void UPlayFabMatchComponent::GetTicketSuccess(const PlayFab::MultiplayerModels::FGetMatchmakingTicketResult& Result)
+void UPlayFabMatchComponent::GetTicketSuccess(const FGetMatchmakingTicketResult& Result)
 {
-	UE_LOG(LogPlayFabMultiplayer, Display, TEXT("%s"), *Result.toJSONString());
+	UE_LOG(LogPlayFabMultiplayer, Display, TEXT("GetMatchmakingTicket: %s"), *Result.toJSONString());
 	if (Result.Status == TEXT("Matched"))
 	{
 		// stop refresh ticket
@@ -98,7 +114,7 @@ void UPlayFabMatchComponent::GetTicketSuccess(const PlayFab::MultiplayerModels::
 		R.MatchId = Result.MatchId;
 		R.QueueName = Result.QueueName;
 		R.ReturnMemberAttributes = true;
-		UE_LOG(LogPlayFabMultiplayer, Warning, TEXT("%s"), *R.toJSONString());
+		UE_LOG(LogPlayFabMultiplayer, Warning, TEXT("GetMatch: %s"), *R.toJSONString());
 		MultiplayerAPI->GetMatch(R,
 			UPlayFabMultiplayerAPI::FGetMatchDelegate::CreateUObject(this, &UPlayFabMatchComponent::GetMatchSuccess),
 			DefaultErrorCpp);
@@ -120,9 +136,9 @@ void UPlayFabMatchComponent::GetTicketSuccess(const PlayFab::MultiplayerModels::
 	}
 }
 
-void UPlayFabMatchComponent::GetMatchSuccess(const PlayFab::MultiplayerModels::FGetMatchResult& Result)
+void UPlayFabMatchComponent::GetMatchSuccess(const FGetMatchResult& Result)
 {
-	UE_LOG(LogPlayFabMultiplayer, Display, TEXT("%s"), *Result.toJSONString());
+	UE_LOG(LogPlayFabMultiplayer, Display, TEXT("GetMatch: %s"), *Result.toJSONString());
 	// find my team
 	FString Portal;
 	TArray<UPlayFabMatchPlayerEntry*> Players;

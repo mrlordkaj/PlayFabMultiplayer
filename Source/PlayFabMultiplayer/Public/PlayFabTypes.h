@@ -70,6 +70,9 @@ struct FPlayFabUserAttributes
 
 	UPROPERTY(BlueprintReadWrite)
 	FString AvatarUrl;
+
+	UPROPERTY(BlueprintReadWrite)
+	FName TargetMap;
 };
 
 /**

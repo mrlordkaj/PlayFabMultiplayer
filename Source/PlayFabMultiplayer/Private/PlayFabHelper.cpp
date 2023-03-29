@@ -22,7 +22,7 @@ bool UPlayFabHelper::IsValidEmail(FString Email)
 
 bool UPlayFabHelper::IsValidPassword(FString Password)
 {
-	return Password.Len() >= 3;
+	return Password.Len() >= 6 && Password.Len() <= 100;
 }
 
 UPlayFabAuthenticationContext* UPlayFabHelper::GetLoginContext(UObject* WorldContextObject)
@@ -53,5 +53,23 @@ void UPlayFabHelper::ReadVirtualCurrency(const FGetPlayerCombinedInfoResult& Res
 	if (Result.InfoResultPayload->UserVirtualCurrency.Contains(Currency))
 	{
 		Value = *Result.InfoResultPayload->UserVirtualCurrency.Find(Currency);
+	}
+}
+
+void UPlayFabHelper::ReadUserDataString(const TMap<FString, FUserDataRecord>& UserData, FString Key, FString& Value)
+{
+	if (UserData.Contains(Key))
+	{
+		FUserDataRecord D = *UserData.Find(Key);
+		Value = D.Value;
+	}
+}
+
+void UPlayFabHelper::ReadUserDataAsName(const TMap<FString, FUserDataRecord>& UserData, FString Key, FName& Name)
+{
+	if (UserData.Contains(Key))
+	{
+		FUserDataRecord D = *UserData.Find(Key);
+		Name = FName(D.Value);
 	}
 }

@@ -21,7 +21,7 @@ protected:
 
 	virtual void BeginPlay() override;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	UPlayFabMultiplayer::FPlayFabErrorDelegate OnPlayFabError;
 
 protected:

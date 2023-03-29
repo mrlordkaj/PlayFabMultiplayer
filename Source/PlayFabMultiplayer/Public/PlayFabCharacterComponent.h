@@ -33,9 +33,11 @@ public:
 	void ListCatalogCharacters();
 
 	UFUNCTION(BlueprintCallable)
-	void PurchaseCharacter(FString ItemId, FString Currency, int Price, FPurchaseCharacterSuccess OnSuccess);
+	void PurchaseCharacter(FString ItemId, FString Currency, int Price, FString Name, FPurchaseCharacterSuccess OnSuccess);
 
 private:
+	FString PurchaseCharacterName;
+
 	FPurchaseCharacterSuccess OnPurchaseCharacterSuccess;
 
 	void ListCatalogCharactersSuccess(const PlayFab::ClientModels::FExecuteCloudScriptResult& Result);

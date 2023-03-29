@@ -24,15 +24,16 @@ void UPlayFabCharacterComponent::ListCatalogCharactersSuccess(const FExecuteClou
 	UE_LOG(LogPlayFabMultiplayer, Display, TEXT("%s"), *Result.toJSONString());
 }
 
-void UPlayFabCharacterComponent::PurchaseCharacter(FString ItemId, FString Currency, int Price, FPurchaseCharacterSuccess OnSuccess)
+void UPlayFabCharacterComponent::PurchaseCharacter(FString ItemId, FString Currency, int Price, FString Name, FPurchaseCharacterSuccess OnSuccess)
 {
+	OnPurchaseCharacterSuccess = OnSuccess;
+	PurchaseCharacterName = Name;
 	FPurchaseItemRequest R;
 	R.AuthenticationContext = GetLoginContext();
 	R.ItemId = ItemId;
 	R.Price = Price;
 	R.VirtualCurrency = Currency;
 	R.CatalogVersion = CatalogVersion;
-	OnPurchaseCharacterSuccess = OnSuccess;
 	UE_LOG(LogTemp, Warning, TEXT("PurchaseItem: %s"), *R.toJSONString());
 	ClientAPI->PurchaseItem(R,
 		PlayFab::UPlayFabClientAPI::FPurchaseItemDelegate::CreateUObject(this, &UPlayFabCharacterComponent::PurchaseCharacterTokenSuccess),
@@ -46,7 +47,7 @@ void UPlayFabCharacterComponent::PurchaseCharacterTokenSuccess(const FPurchaseIt
 	FGrantCharacterToUserRequest R;
 	R.AuthenticationContext = GetLoginContext();
 	R.CatalogVersion = CatalogVersion;
-	R.CharacterName = Item.DisplayName;
+	R.CharacterName = PurchaseCharacterName.IsEmpty() ? Item.DisplayName : PurchaseCharacterName;
 	R.ItemId = Item.ItemId;
 	UE_LOG(LogTemp, Warning, TEXT("GrantCharacterToUser: %s"), *R.toJSONString());
 	ClientAPI->GrantCharacterToUser(R,
