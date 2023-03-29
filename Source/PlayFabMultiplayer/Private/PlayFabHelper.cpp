@@ -56,7 +56,7 @@ void UPlayFabHelper::ReadVirtualCurrency(const FGetPlayerCombinedInfoResult& Res
 	}
 }
 
-void UPlayFabHelper::ReadUserDataString(const TMap<FString, FUserDataRecord>& UserData, FString Key, FString& Value)
+void UPlayFabHelper::ReadUserDataAsString(const TMap<FString, FUserDataRecord>& UserData, FString Key, FString& Value)
 {
 	if (UserData.Contains(Key))
 	{

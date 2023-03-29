@@ -42,12 +42,12 @@ public:
 
 	static void ReadVirtualCurrency(const FGetPlayerCombinedInfoResult& Result, FString Currency, int& Value);
 
-	static void ReadUserDataString(const TMap<FString, FUserDataRecord>& UserData, FString Key, FString& Value);
+	static void ReadUserDataAsString(const TMap<FString, FUserDataRecord>& UserData, FString Key, FString& Value);
 
 	static void ReadUserDataAsName(const TMap<FString, FUserDataRecord>& UserData, FString Key, FName& Name);
 
 	template<typename OutStructType>
-	static void ReadUserDataObject(TMap<FString, FUserDataRecord> UserData, FString Key, OutStructType* OutStruct)
+	static void ReadUserDataAsStruct(TMap<FString, FUserDataRecord> UserData, FString Key, OutStructType* OutStruct)
 	{
 		if (UserData.Contains(Key))
 		{
