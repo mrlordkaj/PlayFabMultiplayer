@@ -17,7 +17,7 @@ void UPlayFabCatalogComponent::GetCatalogItems()
 		DefaultErrorCpp);
 }
 
-void UPlayFabCatalogComponent::GetCatalogItemsSuccess(const PlayFab::ClientModels::FGetCatalogItemsResult& Result)
+void UPlayFabCatalogComponent::GetCatalogItemsSuccess(const FGetCatalogItemsResult& Result)
 {
 	UE_LOG(LogPlayFabMultiplayer, Display, TEXT("GetCatalogItems: %s"), *Result.toJSONString());
 	Items.Empty();
@@ -52,7 +52,7 @@ void UPlayFabCatalogComponent::PurchaseItem(FString ItemId, FString Currency)
 	}
 }
 
-void UPlayFabCatalogComponent::PurchaseItemSuccess(const PlayFab::ClientModels::FPurchaseItemResult& Result)
+void UPlayFabCatalogComponent::PurchaseItemSuccess(const FPurchaseItemResult& Result)
 {
 	UE_LOG(LogPlayFabMultiplayer, Display, TEXT("PurchaseItem: %s"), *Result.toJSONString());
 	if (!Result.Items.IsEmpty())

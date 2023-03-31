@@ -42,11 +42,9 @@ public:
 
 	static int ReadItemPrice(const FCatalogItem& Item, FString Currency);
 
-	static void ReadVirtualCurrency(const FGetPlayerCombinedInfoResult& Result, FString Currency, int& Value);
+	static int ReadVirtualCurrency(const FGetPlayerCombinedInfoResult& Result, FString Currency);
 
-	static void ReadUserDataAsString(const TMap<FString, FUserDataRecord>& UserData, FString Key, FString& Value);
-
-	static void ReadUserDataAsName(const TMap<FString, FUserDataRecord>& UserData, FString Key, FName& Name);
+	static FString ReadUserData(const TMap<FString, FUserDataRecord>& UserData, FString Key);
 
 	template<typename OutStructType>
 	static void ReadUserDataAsStruct(TMap<FString, FUserDataRecord> UserData, FString Key, OutStructType* OutStruct)

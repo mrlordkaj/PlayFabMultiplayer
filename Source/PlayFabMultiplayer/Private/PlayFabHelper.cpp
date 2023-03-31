@@ -54,28 +54,18 @@ int UPlayFabHelper::ReadItemPrice(const FCatalogItem& Item, FString Currency)
 		*Item.VirtualCurrencyPrices.Find(Currency) : 0;
 }
 
-void UPlayFabHelper::ReadVirtualCurrency(const FGetPlayerCombinedInfoResult& Result, FString Currency, int& Value)
+int UPlayFabHelper::ReadVirtualCurrency(const FGetPlayerCombinedInfoResult& Result, FString Currency)
 {
-	if (Result.InfoResultPayload->UserVirtualCurrency.Contains(Currency))
-	{
-		Value = *Result.InfoResultPayload->UserVirtualCurrency.Find(Currency);
-	}
+	return Result.InfoResultPayload->UserVirtualCurrency.Contains(Currency) ?
+		*Result.InfoResultPayload->UserVirtualCurrency.Find(Currency) : 0;
 }
 
-void UPlayFabHelper::ReadUserDataAsString(const TMap<FString, FUserDataRecord>& UserData, FString Key, FString& Value)
+FString UPlayFabHelper::ReadUserData(const TMap<FString, FUserDataRecord>& UserData, FString Key)
 {
 	if (UserData.Contains(Key))
 	{
 		FUserDataRecord D = *UserData.Find(Key);
-		Value = D.Value;
+		return D.Value;
 	}
-}
-
-void UPlayFabHelper::ReadUserDataAsName(const TMap<FString, FUserDataRecord>& UserData, FString Key, FName& Name)
-{
-	if (UserData.Contains(Key))
-	{
-		FUserDataRecord D = *UserData.Find(Key);
-		Name = FName(D.Value);
-	}
+	return FString();
 }
