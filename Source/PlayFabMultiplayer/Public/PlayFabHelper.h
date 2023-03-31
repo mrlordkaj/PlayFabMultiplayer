@@ -40,6 +40,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (WorldContext = "WorldContextObject"))
 	static bool HasLogin(UObject* WorldContextObject);
 
+	static int ReadItemPrice(const FCatalogItem& Item, FString Currency);
+
 	static void ReadVirtualCurrency(const FGetPlayerCombinedInfoResult& Result, FString Currency, int& Value);
 
 	static void ReadUserDataAsString(const TMap<FString, FUserDataRecord>& UserData, FString Key, FString& Value);

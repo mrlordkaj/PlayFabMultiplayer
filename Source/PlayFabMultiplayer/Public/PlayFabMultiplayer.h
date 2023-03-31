@@ -28,6 +28,4 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayFabMessageDelegate, FString, Message);
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayFabErrorDelegate, FPlayFabError, ErrorResult);
-
-	//DECLARE_DYNAMIC_DELEGATE(FPlayFabGenericCallback);
 };

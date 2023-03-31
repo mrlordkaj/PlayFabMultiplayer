@@ -48,6 +48,12 @@ bool UPlayFabHelper::HasLogin(UObject* WorldContextObject)
 	return GI->AuthenticationContext.IsValid();
 }
 
+int UPlayFabHelper::ReadItemPrice(const FCatalogItem& Item, FString Currency)
+{
+	return Item.VirtualCurrencyPrices.Contains(Currency) ?
+		*Item.VirtualCurrencyPrices.Find(Currency) : 0;
+}
+
 void UPlayFabHelper::ReadVirtualCurrency(const FGetPlayerCombinedInfoResult& Result, FString Currency, int& Value)
 {
 	if (Result.InfoResultPayload->UserVirtualCurrency.Contains(Currency))
