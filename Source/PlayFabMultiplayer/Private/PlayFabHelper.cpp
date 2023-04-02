@@ -42,6 +42,18 @@ UPlayFabJsonObject* UPlayFabHelper::GetLoginEntityKey(UObject* WorldContextObjec
 	return D;
 }
 
+FString UPlayFabHelper::GetLoginPlayFabId(UObject* WorldContextObject)
+{
+	UPlayFabGameInstance* GI = WorldContextObject->GetWorld()->GetGameInstance<UPlayFabGameInstance>();
+	return GI->PlayFabId;
+}
+
+FString UPlayFabHelper::GetLoginEntityId(UObject* WorldContextObject)
+{
+	UPlayFabGameInstance* GI = WorldContextObject->GetWorld()->GetGameInstance<UPlayFabGameInstance>();
+	return GI->EntityId;
+}
+
 bool UPlayFabHelper::HasLogin(UObject* WorldContextObject)
 {
 	UPlayFabGameInstance* GI = WorldContextObject->GetWorld()->GetGameInstance<UPlayFabGameInstance>();

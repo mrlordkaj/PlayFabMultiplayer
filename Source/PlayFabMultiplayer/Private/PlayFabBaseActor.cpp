@@ -21,22 +21,10 @@ void APlayFabBaseActor::BeginPlay()
 	DefaultErrorCpp = PlayFab::FPlayFabErrorDelegate::CreateUObject(this, &APlayFabBaseActor::PlayFabErrorCpp);
 }
 
-FString APlayFabBaseActor::GetLoginEntityId()
-{
-	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
-	return GI->EntityId;
-}
-
 TSharedPtr<UPlayFabAuthenticationContext> APlayFabBaseActor::GetLoginContext()
 {
 	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
 	return GI->AuthenticationContext;
-}
-
-FString APlayFabBaseActor::GetLoginPlayFabId()
-{
-	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
-	return GI->PlayFabId;
 }
 
 void APlayFabBaseActor::PlayFabErrorCpp(const PlayFab::FPlayFabCppError& Error)

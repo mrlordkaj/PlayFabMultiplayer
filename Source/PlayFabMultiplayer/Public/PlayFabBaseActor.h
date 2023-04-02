@@ -9,6 +9,7 @@
 #include "PlayFab.h"
 #include "Core/PlayFabClientAPI.h"
 #include "PlayFabMultiplayer.h"
+#include "PlayFabHelper.h"
 #include "PlayFabBaseActor.generated.h"
 
 UCLASS(DisplayName="PlayFab Base Actor")
@@ -30,12 +31,10 @@ protected:
 	PlayFab::FPlayFabErrorDelegate DefaultErrorCpp;
 
 	/* Get PlayFabId stored in game instance. */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Get Login PlayFabId")
-	FString GetLoginPlayFabId();
+	FString GetLoginPlayFabId() { return UPlayFabHelper::GetLoginPlayFabId(this); }
 
-	/* Get authentication context stored in game instance. */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Get Login EntityId")
-	FString GetLoginEntityId();
+	/* Get EntityId context stored in game instance. */
+	FString GetLoginEntityId() { return UPlayFabHelper::GetLoginEntityId(this); }
 
 	/* Get authentication context stored in game instance. */
 	TSharedPtr<UPlayFabAuthenticationContext> GetLoginContext();

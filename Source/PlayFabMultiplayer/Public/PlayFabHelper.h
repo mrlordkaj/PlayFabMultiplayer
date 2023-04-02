@@ -19,12 +19,15 @@ class PLAYFABMULTIPLAYER_API UPlayFabHelper : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 	
 public:
+	/* Checks format validation of username. */
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	static bool IsValidUsername(FString Username);
 
+	/* Checks format validation of email. */
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	static bool IsValidEmail(FString Email);
 
+	/* Checks format validation of password. */
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	static bool IsValidPassword(FString Password);
 
@@ -35,6 +38,14 @@ public:
 	/* Generates EntityKey for blueprint usage. */
 	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (WorldContext = "WorldContextObject"), DisplayName = "Get Login EntityKey")
 	static UPlayFabJsonObject* GetLoginEntityKey(UObject* WorldContextObject);
+
+	/* Gets PlayFabId stored in game instance. */
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (WorldContext = "WorldContextObject"), DisplayName = "Get Login PlayFabId")
+	static FString GetLoginPlayFabId(UObject* WorldContextObject);
+
+	/* Gets EntityId stored in game instance. */
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (WorldContext = "WorldContextObject"), DisplayName = "Get Login EntityId")
+	static FString GetLoginEntityId(UObject* WorldContextObject);
 
 	/* Checks current login status. */
 	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (WorldContext = "WorldContextObject"))

@@ -17,34 +17,36 @@ class PLAYFABMULTIPLAYER_API UPlayFabBaseComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:
-	UPROPERTY(BlueprintAssignable)
-	UPlayFabMultiplayer::FPlayFabErrorDelegate OnPlayFabError;
-
 protected:
 	UPlayFabBaseComponent();
 
 	virtual void BeginPlay() override;
 
+public:
+	/* Error multicast delegate for blueprint usage. */
+	UPROPERTY(BlueprintAssignable)
+	UPlayFabMultiplayer::FPlayFabErrorDelegate OnPlayFabError;
+
+protected:
+	/* Common client api pointer. */
 	PlayFabClientPtr ClientAPI;
 
+	/* Default error delegate for cpp uage. */
 	PlayFab::FPlayFabErrorDelegate DefaultErrorCpp;
 
 	/* Gets PlayFabId stored in game instance. */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Get Login PlayFabId")
-	FString GetLoginPlayFabId();
+	FString GetLoginPlayFabId() { return UPlayFabHelper::GetLoginPlayFabId(this); }
 
 	/* Gets EntityId stored in game instance. */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName = "Get Login EntityId")
-	FString GetLoginEntityId();
+	FString GetLoginEntityId() { return UPlayFabHelper::GetLoginEntityId(this); }
 
 	/* Gets authentication context stored in game instance. */
 	TSharedPtr<UPlayFabAuthenticationContext> GetLoginContext();
 
-	/* Default PlayFabError event. */
+	/* Default error event for cpp usage. */
 	void PlayFabErrorCpp(const PlayFab::FPlayFabCppError& Error);
 
-	/* Default PlayFabError event. */
+	/* Default error event for blueprint usage. */
 	UFUNCTION(BlueprintCallable)
 	void PlayFapError(FPlayFabError Error, UObject* CustomData);
 };

@@ -19,18 +19,6 @@ void UPlayFabBaseComponent::BeginPlay()
 	DefaultErrorCpp = PlayFab::FPlayFabErrorDelegate::CreateUObject(this, &UPlayFabBaseComponent::PlayFabErrorCpp);
 }
 
-FString UPlayFabBaseComponent::GetLoginPlayFabId()
-{
-	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
-	return GI->PlayFabId;
-}
-
-FString UPlayFabBaseComponent::GetLoginEntityId()
-{
-	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
-	return GI->EntityId;
-}
-
 TSharedPtr<UPlayFabAuthenticationContext> UPlayFabBaseComponent::GetLoginContext()
 {
 	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
