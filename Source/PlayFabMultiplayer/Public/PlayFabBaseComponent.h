@@ -9,6 +9,7 @@
 #include "PlayFab.h"
 #include "PlayFabBaseModel.h"
 #include "PlayFabAuthenticationContext.h"
+#include "PlayFabHelper.h"
 #include "PlayFabBaseComponent.generated.h"
 
 

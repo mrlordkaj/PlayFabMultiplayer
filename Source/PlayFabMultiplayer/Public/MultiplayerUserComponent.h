@@ -7,45 +7,45 @@
 #include "PlayFabClientAPI.h"
 #include "PlayFabClientModels.h"
 #include "PlayFabTypes.h"
-#include "Components/ActorComponent.h"
+#include "PlayFabBaseComponent.h"
 #include "MultiplayerUserComponent.generated.h"
 
 UCLASS(Blueprintable, ClassGroup=(PlayFabMultiplayer), meta=(BlueprintSpawnableComponent))
-class PLAYFABMULTIPLAYER_API UMultiplayerUserComponent : public UActorComponent
+class PLAYFABMULTIPLAYER_API UMultiplayerUserComponent : public UPlayFabBaseComponent
 {
 	GENERATED_BODY()
 
-public:
+protected:
 	UMultiplayerUserComponent();
 
 public:
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTeamAssigned, FString, TeamId);
-	/* Broadcast event when team assigned. */
-	UPROPERTY(BlueprintAssignable, DisplayName="On Team Assigned")
-	FOnTeamAssigned OnTeamAssigned;
+	/* Broadcast event when team assigned. Message is the TeamId. */
+	UPROPERTY(BlueprintAssignable)
+	UPlayFabMultiplayer::FPlayFabMessageDelegate OnTeamAssigned;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayFabLinked, FString, PlayFabId);
-	/* Broadcast event when PlayFab account is linked. */
+	/* Broadcast event when PlayFab account is linked. Message is the PlayFabId. */
 	UPROPERTY(BlueprintAssignable, DisplayName="On PlayFab Linked")
-	FOnPlayFabLinked OnPlayFabLinked;
+	UPlayFabMultiplayer::FPlayFabMessageDelegate OnPlayFabLinked;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayFabError, FString, Message);
-	/* Broadcast event when PlayFab error threw message. */
-	UPROPERTY(BlueprintAssignable, DisplayName="On PlayFab Error")
-	FOnPlayFabError OnPlayFabError;
+	//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayFabError, FString, Message);
+	///* Broadcast event when PlayFab error threw message. */
+	//UPROPERTY(BlueprintAssignable, DisplayName="On PlayFab Error")
+	//FOnPlayFabError OnPlayFabError;
 
-	/* Makes request struct for GetPlayerProfile function. */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName="Make GetPlayerProfile Request")
-	FClientGetPlayerProfileRequest MakeClientGetPlayerProfileRequest(FPlayerProfileViewConstraintsTest ViewConstrains);
+	///* Makes request struct for GetPlayerProfile function. */
+	//UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName="Make GetPlayerProfile Request")
+	//FClientGetPlayerProfileRequest MakeClientGetPlayerProfileRequest(FPlayerProfileViewConstraintsTest ViewConstrains);
 
 protected:
-	/* Internal event when PlayFab threw error message. */
-	UFUNCTION(BlueprintCallable, DisplayName="PlayFap Error")
-	void EventPlayFabError(FPlayFabError error, UObject* customData);
+	///* Internal event when PlayFab threw error message. */
+	//UFUNCTION(BlueprintCallable, DisplayName="PlayFap Error")
+	//void EventPlayFabError(FPlayFabError error, UObject* customData);
 
-	/* Gets PlayFabAuthenticationContext stored in GameInstance. */
-	UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName="Get PlayFabContext")
-	UPlayFabAuthenticationContext* GetPlayFabAuthContext();
+	///* Gets PlayFabAuthenticationContext stored in GameInstance. */
+	//UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName="Get PlayFabContext")
+	//UPlayFabAuthenticationContext* GetPlayFabAuthContext();
+
+	bool HasAuthority() { return GetOwner()->HasAuthority(); }
 
 private:
 	UFUNCTION()

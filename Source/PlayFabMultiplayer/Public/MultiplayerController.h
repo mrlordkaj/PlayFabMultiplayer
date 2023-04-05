@@ -18,6 +18,10 @@ class PLAYFABMULTIPLAYER_API AMultiplayerController : public APlayerController
 public:
     virtual void PawnLeavingGame() override;
 
+protected:
+    virtual void OnPossess(APawn* aPawn) override;
+
+public:
 	UPROPERTY(BlueprintReadOnly)
     FString PawnClass;
 
@@ -30,6 +34,4 @@ public:
 protected:
     UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
     EPlayerLeaveBehaviour PlayerLeaveBehaviour = EPlayerLeaveBehaviour::DestroyPawn;
-
-    virtual void OnPossess(APawn* aPawn) override;
 };
