@@ -8,11 +8,6 @@
 UPlayFabBaseComponent::UPlayFabBaseComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
-}
-
-void UPlayFabBaseComponent::BeginPlay()
-{
-	Super::BeginPlay();
 
 	// create common stuffs
 	ClientAPI = IPlayFabModuleInterface::Get().GetClientAPI();

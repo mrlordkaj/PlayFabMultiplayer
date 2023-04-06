@@ -10,12 +10,7 @@ using namespace PlayFab::ClientModels;
 APlayFabBaseActor::APlayFabBaseActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
-}
 
-void APlayFabBaseActor::BeginPlay()
-{
-	Super::BeginPlay();
-	
 	// create common stuffs
 	ClientAPI = IPlayFabModuleInterface::Get().GetClientAPI();
 	DefaultErrorCpp = PlayFab::FPlayFabErrorDelegate::CreateUObject(this, &APlayFabBaseActor::PlayFabErrorCpp);

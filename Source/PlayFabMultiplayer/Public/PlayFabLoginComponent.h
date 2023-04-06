@@ -22,7 +22,6 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	UPlayFabMultiplayer::FPlayFabGenericDelegate OnLoginSuccess;
 
-protected:
 	UFUNCTION(BlueprintCallable, DisplayName = "Register PlayFab")
 	void RegisterPlayFab(FString Username, FString Email, FString Password);
 

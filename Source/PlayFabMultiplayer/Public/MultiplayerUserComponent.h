@@ -21,11 +21,11 @@ protected:
 public:
 	/* Broadcast event when team assigned. Message is the TeamId. */
 	UPROPERTY(BlueprintAssignable)
-	UPlayFabMultiplayer::FPlayFabMessageDelegate OnTeamAssigned;
+	UPlayFabMultiplayer::FPlayFabGenericDelegate OnTeamAssigned;
 
 	/* Broadcast event when PlayFab account is linked. Message is the PlayFabId. */
 	UPROPERTY(BlueprintAssignable, DisplayName="On PlayFab Linked")
-	UPlayFabMultiplayer::FPlayFabMessageDelegate OnPlayFabLinked;
+	UPlayFabMultiplayer::FPlayFabGenericDelegate OnPlayFabLinked;
 
 	//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayFabError, FString, Message);
 	///* Broadcast event when PlayFab error threw message. */
@@ -56,7 +56,7 @@ private:
 
 public:
 	/* Replicated PlayFabId. */
-	UPROPERTY(BlueprintReadWrite, ReplicatedUsing = OnRep_PlayFabId, DisplayName = "PlayFabId")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_PlayFabId, DisplayName = "PlayFabId")
 	FString PlayFabId;
 
 	/* Replicated TeamId. */

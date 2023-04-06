@@ -21,8 +21,6 @@ class PLAYFABMULTIPLAYER_API UPlayFabBaseComponent : public UActorComponent
 protected:
 	UPlayFabBaseComponent();
 
-	virtual void BeginPlay() override;
-
 public:
 	/* Error multicast delegate for blueprint usage. */
 	UPROPERTY(BlueprintAssignable)

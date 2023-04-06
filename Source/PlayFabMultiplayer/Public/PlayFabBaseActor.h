@@ -20,8 +20,6 @@ class PLAYFABMULTIPLAYER_API APlayFabBaseActor : public AActor
 protected:
 	APlayFabBaseActor();
 
-	virtual void BeginPlay() override;
-
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	UPlayFabMultiplayer::FPlayFabErrorDelegate OnPlayFabError;
 

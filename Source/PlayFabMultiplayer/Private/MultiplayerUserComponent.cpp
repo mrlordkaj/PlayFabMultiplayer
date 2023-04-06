@@ -50,7 +50,7 @@ void UMultiplayerUserComponent::OnRep_PlayFabId()
 {
 	if (!HasAuthority()) {
 		if (PlayFabId.Len() == 16) {
-			OnPlayFabLinked.Broadcast(PlayFabId);
+			OnPlayFabLinked.Broadcast();
 		}
 		else {
 			UE_LOG(LogPlayFabMultiplayer, Warning, TEXT("Invalid PlayFabId %s."), *PlayFabId);
@@ -61,7 +61,7 @@ void UMultiplayerUserComponent::OnRep_PlayFabId()
 void UMultiplayerUserComponent::OnRep_TeamId()
 {
 	if (!HasAuthority()) {
-		OnTeamAssigned.Broadcast(TeamId);
+		OnTeamAssigned.Broadcast();
 	}
 }
 
