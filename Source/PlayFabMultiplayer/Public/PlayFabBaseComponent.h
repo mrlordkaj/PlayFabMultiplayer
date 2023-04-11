@@ -26,13 +26,6 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	UPlayFabMultiplayer::FPlayFabErrorDelegate OnPlayFabError;
 
-protected:
-	/* Common client api pointer. */
-	PlayFabClientPtr ClientAPI;
-
-	/* Default error delegate for cpp uage. */
-	PlayFab::FPlayFabErrorDelegate DefaultErrorCpp;
-
 	/* Gets PlayFabId stored in game instance. */
 	FString GetLoginPlayFabId() { return UPlayFabHelper::GetLoginPlayFabId(this); }
 
@@ -41,6 +34,13 @@ protected:
 
 	/* Gets authentication context stored in game instance. */
 	TSharedPtr<UPlayFabAuthenticationContext> GetLoginContext();
+
+protected:
+	/* Common client api pointer. */
+	PlayFabClientPtr ClientAPI;
+
+	/* Default error delegate for cpp uage. */
+	PlayFab::FPlayFabErrorDelegate DefaultErrorCpp;
 
 	/* Default error event for cpp usage. */
 	void PlayFabErrorCpp(const PlayFab::FPlayFabCppError& Error);
