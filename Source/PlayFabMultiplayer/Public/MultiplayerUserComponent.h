@@ -3,10 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PlayFabBaseModel.h"
-#include "PlayFabClientAPI.h"
-#include "PlayFabClientModels.h"
-#include "PlayFabTypes.h"
 #include "PlayFabBaseComponent.h"
 #include "MultiplayerUserComponent.generated.h"
 
@@ -18,6 +14,8 @@ class PLAYFABMULTIPLAYER_API UMultiplayerUserComponent : public UPlayFabBaseComp
 protected:
 	UMultiplayerUserComponent();
 
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
 public:
 	/* Broadcast event when team assigned. Message is the TeamId. */
 	UPROPERTY(BlueprintAssignable)
@@ -27,39 +25,19 @@ public:
 	UPROPERTY(BlueprintAssignable, DisplayName="On PlayFab Linked")
 	UPlayFabMultiplayer::FPlayFabGenericDelegate OnPlayFabLinked;
 
-	//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayFabError, FString, Message);
-	///* Broadcast event when PlayFab error threw message. */
-	//UPROPERTY(BlueprintAssignable, DisplayName="On PlayFab Error")
-	//FOnPlayFabError OnPlayFabError;
-
-	///* Makes request struct for GetPlayerProfile function. */
-	//UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName="Make GetPlayerProfile Request")
-	//FClientGetPlayerProfileRequest MakeClientGetPlayerProfileRequest(FPlayerProfileViewConstraintsTest ViewConstrains);
-
 protected:
-	///* Internal event when PlayFab threw error message. */
-	//UFUNCTION(BlueprintCallable, DisplayName="PlayFap Error")
-	//void EventPlayFabError(FPlayFabError error, UObject* customData);
-
-	///* Gets PlayFabAuthenticationContext stored in GameInstance. */
-	//UFUNCTION(BlueprintCallable, BlueprintPure, DisplayName="Get PlayFabContext")
-	//UPlayFabAuthenticationContext* GetPlayFabAuthContext();
-
 	bool HasAuthority() { return GetOwner()->HasAuthority(); }
 
 private:
-	UFUNCTION()
-	void OnRep_PlayFabId();
-
-	UFUNCTION()
-	void OnRep_TeamId();
+	/* Previous values for change detection. */
+	FString PrevPlayFabId, PrevTeamId;
 
 public:
 	/* Replicated PlayFabId. */
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_PlayFabId, DisplayName = "PlayFabId")
+	UPROPERTY(BlueprintReadOnly, Replicated, DisplayName = "PlayFabId")
 	FString PlayFabId;
 
 	/* Replicated TeamId. */
-	UPROPERTY(BlueprintReadWrite, ReplicatedUsing = OnRep_TeamId, DisplayName = "TeamId")
+	UPROPERTY(BlueprintReadWrite, Replicated, DisplayName = "TeamId")
 	FString TeamId;
 };

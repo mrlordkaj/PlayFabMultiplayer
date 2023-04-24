@@ -3,66 +3,13 @@
 
 #include "MultiplayerUserComponent.h"
 #include "PlayFabMultiplayer.h"
-#include "PlayFabGameInstance.h"
-#include "PlayFabHelper.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 
 UMultiplayerUserComponent::UMultiplayerUserComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.TickInterval = 0.5f;
 	SetIsReplicatedByDefault(true);
-}
-
-//FClientGetPlayerProfileRequest UMultiplayerUserComponent::MakeClientGetPlayerProfileRequest(FPlayerProfileViewConstraintsTest ViewConstrains)
-//{
-//	FClientGetPlayerProfileRequest Request;
-//	Request.PlayFabId = PlayFabId;
-//	UPlayFabJsonObject* Json = Request.ProfileConstraints = UPlayFabJsonObject::ConstructJsonObject(GetWorld());
-//	if (ViewConstrains.ShowAvatarUrl) Json->SetBoolField("ShowAvatarUrl", true);
-//	if (ViewConstrains.ShowBannedUntil) Json->SetBoolField("ShowBannedUntil", true);
-//	if (ViewConstrains.ShowCampaignAttributions) Json->SetBoolField("ShowCampaignAttributions", true);
-//	if (ViewConstrains.ShowContactEmailAddresses) Json->SetBoolField("ShowContactEmailAddresses", true);
-//	if (ViewConstrains.ShowCreated) Json->SetBoolField("ShowCreated", true);
-//	if (ViewConstrains.ShowDisplayName) Json->SetBoolField("ShowDisplayName", true);
-//	if (ViewConstrains.ShowExperimentVariants) Json->SetBoolField("ShowExperimentVariants", true);
-//	if (ViewConstrains.ShowLastLogin) Json->SetBoolField("ShowLastLogin", true);
-//	if (ViewConstrains.ShowLinkedAccounts) Json->SetBoolField("ShowLinkedAccounts", true);
-//	if (ViewConstrains.ShowLocations) Json->SetBoolField("ShowLocations", true);
-//	if (ViewConstrains.ShowMemberships) Json->SetBoolField("ShowMemberships", true);
-//	if (ViewConstrains.ShowOrigination) Json->SetBoolField("ShowOrigination", true);
-//	if (ViewConstrains.ShowPushNotificationRegistrations) Json->SetBoolField("ShowPushNotificationRegistrations", true);
-//	if (ViewConstrains.ShowStatistics) Json->SetBoolField("ShowStatistics", true);
-//	if (ViewConstrains.ShowTags) Json->SetBoolField("ShowTags", true);
-//	if (ViewConstrains.ShowTotalValueToDateInUsd) Json->SetBoolField("ShowTotalValueToDateInUsd", true);
-//	if (ViewConstrains.ShowValuesToDate) Json->SetBoolField("ShowValuesToDate", true);
-//	Request.AuthenticationContext = UPlayFabHelper::GetLoginContext(this);
-//	return Request;
-//}
-
-//UPlayFabAuthenticationContext* UMultiplayerUserComponent::GetPlayFabAuthContext()
-//{
-//	UPlayFabGameInstance* GI = GetWorld()->GetGameInstance<UPlayFabGameInstance>();
-//	return GI->AuthenticationContext.Get();
-//}
-
-void UMultiplayerUserComponent::OnRep_PlayFabId()
-{
-	if (!HasAuthority()) {
-		if (PlayFabId.Len() == 16) {
-			OnPlayFabLinked.Broadcast();
-		}
-		else {
-			UE_LOG(LogPlayFabMultiplayer, Warning, TEXT("Invalid PlayFabId %s."), *PlayFabId);
-		}
-	}
-}
-
-void UMultiplayerUserComponent::OnRep_TeamId()
-{
-	if (!HasAuthority()) {
-		OnTeamAssigned.Broadcast();
-	}
 }
 
 void UMultiplayerUserComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -73,9 +20,24 @@ void UMultiplayerUserComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 	DOREPLIFETIME(UMultiplayerUserComponent, TeamId);
 }
 
-//void UMultiplayerUserComponent::EventPlayFabError(FPlayFabError error, UObject* customData)
-//{
-//	FString Msg = FString::Printf(TEXT("PlayFabError: %s (%d)"), *error.ErrorMessage, error.ErrorCode);
-//	UKismetSystemLibrary::PrintString(GetWorld(), Msg, true, true, FLinearColor::Red);
-//	OnPlayFabError.Broadcast(Msg);
-//}
+void UMultiplayerUserComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+                                              FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (PlayFabId != PrevPlayFabId)
+	{
+		if (PlayFabId.Len() == 16) {
+			OnPlayFabLinked.Broadcast();
+		}
+		else {
+			UE_LOG(LogPlayFabMultiplayer, Warning, TEXT("Invalid PlayFabId %s."), *PlayFabId);
+		}
+		PrevPlayFabId = PlayFabId;
+	}
+	if (TeamId != PrevTeamId)
+	{
+		OnTeamAssigned.Broadcast();
+		PrevTeamId = TeamId;
+	}
+}
