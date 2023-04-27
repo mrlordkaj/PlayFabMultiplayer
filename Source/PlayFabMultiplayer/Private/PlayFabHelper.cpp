@@ -15,7 +15,7 @@ bool UPlayFabHelper::IsValidUsername(FString Username)
 
 bool UPlayFabHelper::IsValidEmail(FString Email)
 {
-	FRegexPattern P(TEXT("[\\w\\d]{3,}@[\\w\\d]+\\.[\\w\\d]{2,}"));
+	FRegexPattern P(TEXT("[\\w\\d\\-\\.]{2,}@[\\w\\d\\-\\.]{2,}\\.[\\w\\d\\-\\.]{2,}"));
 	FRegexMatcher M(P, Email);
 	return M.FindNext();
 }
