@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
+#include "PlayFabTypes.h"
 #include "PlayFabSaveLogin.generated.h"
 
 /**
