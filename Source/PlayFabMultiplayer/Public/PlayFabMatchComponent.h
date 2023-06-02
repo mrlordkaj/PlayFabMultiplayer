@@ -54,7 +54,7 @@ public:
 	FString PawnClass;
 
 	UFUNCTION(BlueprintCallable)
-	void CreateTicket(FString QueueName);
+	void CreateTicket(FString QueueName, bool bCancelPreviously = true);
 
 	UFUNCTION(BlueprintCallable)
 	void CancelTicket();
@@ -76,6 +76,8 @@ private:
 
 	///* Callback on create matchmaking ticket success. */
 	//void GetQueueStatisticsSuccess(const PlayFab::MultiplayerModels::FGetQueueStatisticsResult& Result);
+
+	void CancelAllTicketsSuccess(const PlayFab::MultiplayerModels::FCancelAllMatchmakingTicketsForPlayerResult& Result);
 
 	/* Callback on create matchmaking ticket success. */
 	void CreateTicketSuccess(const PlayFab::MultiplayerModels::FCreateMatchmakingTicketResult& Result);

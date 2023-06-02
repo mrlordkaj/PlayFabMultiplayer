@@ -17,22 +17,39 @@ void UPlayFabMatchComponent::BeginPlay()
 	MultiplayerAPI = IPlayFabModuleInterface::Get().GetMultiplayerAPI();
 }
 
-void UPlayFabMatchComponent::CreateTicket(FString QueueName)
+void UPlayFabMatchComponent::CreateTicket(FString QueueName, bool bCancelPreviously)
 {
-	// create ticket
-	CreateTicketRequest.GiveUpAfterSeconds = TicketTimeout;
+	// save queue name
 	CreateTicketRequest.QueueName = QueueName;
-	CreateTicketRequest.AuthenticationContext = GetLoginContext();
-	CreateTicketRequest.Creator.Attributes = MakeShareable(new FMatchmakingPlayerAttributes);
-	TSharedPtr<FJsonObject> J = FJsonObjectConverter::UStructToJsonObject(UserAttributes);
-	CreateTicketRequest.Creator.Attributes->DataObject = FJsonKeeper(J);
-	CreateTicketRequest.Creator.Entity.Id = GetLoginEntityId();
-	CreateTicketRequest.Creator.Entity.Type = TEXT("title_player_account");
-	// TODO: members to match with
-	UE_LOG(LogPlayFabMultiplayer, Warning, TEXT("CreateTicket: %s"), *CreateTicketRequest.toJSONString());
-	MultiplayerAPI->CreateMatchmakingTicket(CreateTicketRequest,
-		UPlayFabMultiplayerAPI::FCreateMatchmakingTicketDelegate::CreateUObject(this, &UPlayFabMatchComponent::CreateTicketSuccess),
-		DefaultErrorCpp);
+	if (bCancelPreviously)
+	{
+		// cancel previous tickets
+		FCancelAllMatchmakingTicketsForPlayerRequest R;
+		R.QueueName = QueueName;
+		R.Entity = MakeShareable(new PlayFab::MultiplayerModels::FEntityKey);
+		R.Entity->Id = GetLoginEntityId();
+		R.Entity->Type = TEXT("title_player_account");
+		UE_LOG(LogPlayFabMultiplayer, Warning, TEXT("CancelAllTickets: %s"), *R.toJSONString());
+		MultiplayerAPI->CancelAllMatchmakingTicketsForPlayer(R,
+			UPlayFabMultiplayerAPI::FCancelAllMatchmakingTicketsForPlayerDelegate::CreateUObject(this, &UPlayFabMatchComponent::CancelAllTicketsSuccess),
+			DefaultErrorCpp);
+	}
+	else
+	{
+		// create new ticket
+		CreateTicketRequest.GiveUpAfterSeconds = TicketTimeout;
+		CreateTicketRequest.AuthenticationContext = GetLoginContext();
+		CreateTicketRequest.Creator.Attributes = MakeShareable(new FMatchmakingPlayerAttributes);
+		TSharedPtr<FJsonObject> J = FJsonObjectConverter::UStructToJsonObject(UserAttributes);
+		CreateTicketRequest.Creator.Attributes->DataObject = FJsonKeeper(J);
+		CreateTicketRequest.Creator.Entity.Id = GetLoginEntityId();
+		CreateTicketRequest.Creator.Entity.Type = TEXT("title_player_account");
+		// TODO: members to match with
+		UE_LOG(LogPlayFabMultiplayer, Warning, TEXT("CreateTicket: %s"), *CreateTicketRequest.toJSONString());
+		MultiplayerAPI->CreateMatchmakingTicket(CreateTicketRequest,
+			UPlayFabMultiplayerAPI::FCreateMatchmakingTicketDelegate::CreateUObject(this, &UPlayFabMatchComponent::CreateTicketSuccess),
+			DefaultErrorCpp);
+	}
 
 	//// get queue statistics
 	//FGetQueueStatisticsRequest R;
@@ -42,6 +59,12 @@ void UPlayFabMatchComponent::CreateTicket(FString QueueName)
 	//MultiplayerAPI->GetQueueStatistics(R,
 	//	UPlayFabMultiplayerAPI::FGetQueueStatisticsDelegate::CreateUObject(this, &UPlayFabMatchComponent::GetQueueStatisticsSuccess),
 	//	DefaultErrorCpp);
+}
+
+void UPlayFabMatchComponent::CancelAllTicketsSuccess(const PlayFab::MultiplayerModels::FCancelAllMatchmakingTicketsForPlayerResult& Result)
+{
+	UE_LOG(LogPlayFabMultiplayer, Display, TEXT("CancelAllTickets: %s"), *Result.toJSONString());
+	CreateTicket(CreateTicketRequest.QueueName, false);
 }
 
 void UPlayFabMatchComponent::CreateTicketSuccess(const FCreateMatchmakingTicketResult& Result)
