@@ -37,6 +37,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	FString Options;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	FString Portal;
+
 	UFUNCTION()
 	void LoginSuccess();
 };

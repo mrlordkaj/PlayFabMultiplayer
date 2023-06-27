@@ -8,6 +8,7 @@
 #define PARAM_LOGIN_ID TEXT("LoginId")
 #define PARAM_LOGIN_TOKEN TEXT("LoginToken")
 #define PARAM_OPTIONS TEXT("Options")
+#define PARAM_PORTAL TEXT("Portal")
 
 using namespace PlayFab::ClientModels;
 
@@ -37,6 +38,9 @@ void APlayFabTestActor::BeginPlay()
 	{
 		Options = *Params.Find(PARAM_OPTIONS);
 	}
+	if (Params.Contains(PARAM_PORTAL)) {
+		Portal = *Params.Find(PARAM_PORTAL);
+	}
 	if (!LoginId.IsEmpty() && !LoginToken.IsEmpty())
 	{
 		PlayFabLogin->OnLoginSuccess.AddDynamic(this, &APlayFabTestActor::LoginSuccess);
@@ -56,5 +60,5 @@ void APlayFabTestActor::BeginPlay()
 void APlayFabTestActor::LoginSuccess()
 {
 	UGameplayStatics::OpenLevel(this, TEXT("127.0.0.1"), true,
-		Options + TEXT("?PlayFabId=") + UPlayFabHelper::GetLoginPlayFabId(this));
+		TEXT("?PlayFabId=") + UPlayFabHelper::GetLoginPlayFabId(this) + Options + TEXT("#") + Portal);
 }
