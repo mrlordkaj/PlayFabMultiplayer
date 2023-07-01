@@ -5,10 +5,10 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
-#define PARAM_LOGIN_ID TEXT("LoginId")
-#define PARAM_LOGIN_TOKEN TEXT("LoginToken")
-#define PARAM_OPTIONS TEXT("Options")
-#define PARAM_PORTAL TEXT("Portal")
+#define PARAM_LOGIN_ID		TEXT("LoginId")
+#define PARAM_LOGIN_TOKEN	TEXT("LoginToken")
+#define PARAM_OPTIONS		TEXT("Options")
+#define PARAM_PORTAL		TEXT("Portal")
 
 using namespace PlayFab::ClientModels;
 
@@ -60,5 +60,5 @@ void APlayFabTestActor::BeginPlay()
 void APlayFabTestActor::LoginSuccess()
 {
 	UGameplayStatics::OpenLevel(this, TEXT("127.0.0.1"), true,
-		TEXT("?PlayFabId=") + UPlayFabHelper::GetLoginPlayFabId(this) + Options + TEXT("#") + Portal);
+		TEXT("PlayFabId=") + UPlayFabHelper::GetLoginPlayFabId(this) + Options + TEXT("#") + Portal);
 }
